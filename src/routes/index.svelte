@@ -3,20 +3,21 @@
 	import { browser } from '$app/env';
 	import Canvas from '$lib/canvas.svelte';
 
-	let showDialog = false;
+	let showPopup: boolean;
 
 	if (browser) {
-		const mediaQueryList = window.matchMedia('(orientation: landscape)');
-		showDialog = mediaQueryList.matches && (window.innerWidth < 640 || window.innerHeight < 640);
+		const mediaQueryList = window.matchMedia('(orientation: portrait)');
+		showPopup = mediaQueryList.matches && window.innerWidth < 640;
+
 		mediaQueryList.addEventListener('change', (event) => {
-			showDialog = event.matches && window.innerHeight < 640;
+			showPopup = event.matches && window.innerWidth < 640;
 		});
 	}
 </script>
 
 <Canvas />
 
-{#if showDialog}
+{#if showPopup}
 	<div
 		class="absolute inset-0 text-center backdrop-blur flex flex-col justify-center items-center w-screen h-screen"
 	>
