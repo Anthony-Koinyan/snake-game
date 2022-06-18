@@ -9,10 +9,7 @@ const config = {
 		postcss: true
 	}),
 	kit: {
-		adapter: adapter(),
-		alias: {
-			$routes: 'src/routes'
-		}
+		adapter: adapter()
 	}
 };
 
