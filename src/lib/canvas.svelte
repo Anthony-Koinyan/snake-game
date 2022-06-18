@@ -9,8 +9,8 @@
 	}
 
 	function setCanvasSize() {
-		width = window.innerWidth > 640 ? window.innerWidth - 100 : window.innerWidth - 10;
-		height = window.innerWidth > 640 ? window.innerHeight - 100 : window.innerHeight - 50;
+		width = window.innerWidth * 0.8;
+		height = window.innerHeight * 0.8;
 	}
 </script>
 
