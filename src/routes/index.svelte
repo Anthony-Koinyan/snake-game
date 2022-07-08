@@ -1,26 +1,10 @@
 <script lang="ts">
-	// TODO: Add a dialog that says app shouldn only be used in portrait if screen oriantation is landscape
-	import { browser } from '$app/env';
-	import Canvas from '$lib/canvas.svelte';
-
-	let showPopup: boolean;
-
-	if (browser) {
-		const mediaQueryList = window.matchMedia('(orientation: portrait)');
-		showPopup = mediaQueryList.matches && window.innerWidth < 640;
-
-		mediaQueryList.addEventListener('change', (event) => {
-			showPopup = event.matches && window.innerWidth < 640;
-		});
-	}
+	import NavLink from '$lib/NavLink.svelte';
 </script>
 
-<Canvas />
-
-{#if showPopup}
-	<div
-		class="absolute inset-0 text-center backdrop-blur flex flex-col justify-center items-center w-screen h-screen"
-	>
-		<div>Flip your screen</div>
-	</div>
-{/if}
+<nav class="m-auto flex flex-col items-center justify-center gap-20 w-full h-full">
+	<NavLink url="/play" description="Continue" />
+	<NavLink url="/play" description="New Game" />
+	<NavLink url="/settings" description="Settings" />
+	<NavLink url="https://github.com/Anthony-Koinyan/snake-game" description="Repo" />
+</nav>
