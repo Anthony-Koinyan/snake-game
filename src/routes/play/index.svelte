@@ -34,7 +34,7 @@
 	export let canvasHeight: number;
 </script>
 
-<section class="flex flex-col items-center gap-5 w-fit h-screen mx-auto my-4">
+<section class="flex flex-col items-center gap-5 w-fit h-screen mx-auto my-0">
 	<Canvas width={canvasWidth} height={canvasHeight}>
 		<Snake />
 	</Canvas>
