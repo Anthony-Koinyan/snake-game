@@ -1,42 +1,114 @@
 <script lang="ts">
 	// TODO: STYLE FALLBACK CONTENT!!!!
-	import { browser } from '$app/env';
-	import { onMount, setContext } from 'svelte';
+	import { afterUpdate, onMount, setContext, tick } from 'svelte';
 	import { ctxKey } from '../settings';
-	import { canvasState } from './canvasState';
-	import setCanvasSize from './setCanvasSize';
+	import { canvasSize } from './store';
+	import { setCanvasSize, scaleCanvasDrawings } from './setCanvasSize';
+	import type { RenderFn, RenderObject, Context } from './types';
 
-	if (browser) setCanvasSize();
-
+	export let container: HTMLElement;
 	let canvas: HTMLCanvasElement;
-	let ctx: CanvasRenderingContext2D | null;
+	let ctx: CanvasRenderingContext2D;
+	let animationLoop: number;
 
-	setContext(ctxKey, {
-		getCanvasContext: () => {
-			if (!ctx) ctx = canvas.getContext('2d');
-			return ctx;
+	const renders = new Set<RenderFn>();
+	const animations = new Set<RenderFn>();
+
+	setContext<Context>(ctxKey, {
+		addToBeRendered(data: RenderObject) {
+			if (data.animate) {
+				if (animations.has(data.renderFn)) animations.delete(data.renderFn);
+				animations.add(data.renderFn);
+			} else {
+				if (renders.has(data.renderFn)) renders.delete(data.renderFn);
+				renders.add(data.renderFn);
+			}
+		},
+		removeFromRenders(fn: RenderFn) {
+			if (renders.has(fn)) renders.delete(fn);
+		},
+		removeFromAnimations(fn: RenderFn) {
+			if (animations.has(fn)) animations.delete(fn);
 		}
 	});
 
-	onMount(() => {
-		if (!ctx) ctx = canvas.getContext('2d');
-		if (!$canvasState.scaleFactor || !ctx) return;
-		let pixelRatio = window.devicePixelRatio;
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
-		ctx.scale($canvasState.scaleFactor * pixelRatio, $canvasState.scaleFactor * pixelRatio);
+	const runRenders = () => {
+		renders.forEach((fn) => {
+			if (!fn) throw new Error('Render function must not be null');
+			if (typeof fn !== 'function') throw new Error('Render function must be function');
+			fn(ctx);
+		});
+	};
+
+	const runAnimations = () => {
+		if (animations.size === 0) {
+			cancelAnimationFrame(animationLoop);
+
+			return;
+		}
+
+		animations.forEach((fn) => {
+			if (!fn) {
+				cancelAnimationFrame(animationLoop);
+				throw new Error('Animation function must not be null');
+			}
+
+			if (typeof fn !== 'function') {
+				cancelAnimationFrame(animationLoop);
+				throw new Error('Animation function must be function');
+			}
+
+			fn(ctx);
+		});
+
+		animationLoop = requestAnimationFrame(runAnimations);
+	};
+
+	onMount(async () => {
+		await tick();
+		setCanvasSize(container);
+		const context = canvas.getContext('2d');
+		if (!context) throw new Error('Browser does not support canvas');
+		ctx = context;
+
+		return () => {
+			cancelAnimationFrame(animationLoop);
+		};
+	});
+
+	afterUpdate(async () => {
+		if (!ctx) return;
+		cancelAnimationFrame(animationLoop);
+		await tick();
+		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
+
+		if (renders.size > 0) {
+			await tick();
+			runRenders();
+		}
+
+		if (animations.size > 0) {
+			await tick();
+			runAnimations();
+		}
 	});
 </script>
 
 <canvas
-	width={$canvasState.width}
-	height={$canvasState.height}
-	style:width={$canvasState.styleWidth}
-	style:height={$canvasState.styleHeight}
-	class="border-2 border-solid border-red-300"
+	width={$canvasSize.canvasWidth}
+	height={$canvasSize.canvasHeight}
+	style:width={$canvasSize.styleWidth}
+	style:height={$canvasSize.styleHeight}
+	class="border-2 border-solid border-red-300 mx-auto"
 	bind:this={canvas}
 	data-testid="canvas"
 >
 	Your browser doesn't support this content
-	<slot />
 </canvas>
-<svelte:window on:resize={setCanvasSize} />
+
+<slot />
+<svelte:window
+	on:resize|passive={() => {
+		setCanvasSize(container);
+	}}
+/>
