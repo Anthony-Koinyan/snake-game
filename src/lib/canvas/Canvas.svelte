@@ -10,6 +10,7 @@
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
 	let animationLoop: number;
+	let runningAnimation = false;
 
 	const renders = new Set<RenderFn>();
 	const animations = new Set<RenderFn>();
@@ -41,6 +42,8 @@
 	};
 
 	const runAnimations = () => {
+		runningAnimation = true;
+
 		if (animations.size === 0) {
 			cancelAnimationFrame(animationLoop);
 
@@ -64,20 +67,28 @@
 		animationLoop = requestAnimationFrame(runAnimations);
 	};
 
+	const pauseAnimation = () => {
+		cancelAnimationFrame(animationLoop);
+		runningAnimation = false;
+	};
+
 	onMount(async () => {
 		await tick();
 		setCanvasSize(container);
 		const context = canvas.getContext('2d');
 		if (!context) throw new Error('Browser does not support canvas');
 		ctx = context;
+		runningAnimation = true;
 
 		return () => {
+			runningAnimation = false;
 			cancelAnimationFrame(animationLoop);
 		};
 	});
 
 	afterUpdate(async () => {
-		if (!ctx) return;
+		if (!ctx || !runningAnimation) return;
+
 		cancelAnimationFrame(animationLoop);
 		await tick();
 		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
@@ -111,4 +122,12 @@
 	on:resize|passive={() => {
 		setCanvasSize(container);
 	}}
+	on:keypress|preventDefault={(e) => {
+		if (e.code === 'Space') {
+			if (runningAnimation === true) pauseAnimation();
+			else runAnimations();
+		}
+	}}
 />
+<!-- <svelte:body
+	 /> -->
