@@ -16,7 +16,6 @@ export interface RenderObject {
 }
 
 export interface Context {
-	addToBeRendered(data: RenderObject): void;
-	removeFromRenders(fn: RenderFn): void;
-	removeFromAnimations(fn: RenderFn): void;
+	addRenderFn(data: RenderObject): void;
+	removeRenderFn(fn: RenderFn): void;
 }

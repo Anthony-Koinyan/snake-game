@@ -16,7 +16,7 @@
 	const animations = new Set<RenderFn>();
 
 	setContext<Context>(ctxKey, {
-		addToBeRendered(data: RenderObject) {
+		addRenderFn(data: RenderObject) {
 			if (data.animate) {
 				if (animations.has(data.renderFn)) animations.delete(data.renderFn);
 				animations.add(data.renderFn);
@@ -25,10 +25,8 @@
 				renders.add(data.renderFn);
 			}
 		},
-		removeFromRenders(fn: RenderFn) {
+		removeRenderFn(fn: RenderFn) {
 			if (renders.has(fn)) renders.delete(fn);
-		},
-		removeFromAnimations(fn: RenderFn) {
 			if (animations.has(fn)) animations.delete(fn);
 		}
 	});
