@@ -1,10 +1,10 @@
 <script lang="ts">
 	// TODO: STYLE FALLBACK CONTENT!!!!
-	import { afterUpdate, onMount, setContext, tick } from 'svelte';
-	import { ctxKey } from '../settings';
+	import { onMount, setContext, tick } from 'svelte';
+	import { RENDER_CONTEXT_KEY } from '../stores';
 	import { canvasSize } from './store';
 	import { setCanvasSize, scaleCanvasDrawings } from './setCanvasSize';
-	import type { RenderFn, RenderObject, Context } from './types';
+	import type { RenderFn, RenderObject, RenderContext } from './types';
 
 	export let container: HTMLElement;
 	let canvas: HTMLCanvasElement;
@@ -15,7 +15,7 @@
 	const renders = new Set<RenderFn>();
 	const animations = new Set<RenderFn>();
 
-	setContext<Context>(ctxKey, {
+	setContext<RenderContext>(RENDER_CONTEXT_KEY, {
 		addRenderFn(data: RenderObject) {
 			if (data.animate) {
 				if (animations.has(data.renderFn)) animations.delete(data.renderFn);
@@ -27,7 +27,13 @@
 		},
 		removeRenderFn(fn: RenderFn) {
 			if (renders.has(fn)) renders.delete(fn);
-			if (animations.has(fn)) animations.delete(fn);
+
+			if (animations.has(fn)) {
+				animations.delete(fn);
+				if (animations.size === 0) {
+					pauseAnimation();
+				}
+			}
 		}
 	});
 
@@ -43,19 +49,17 @@
 		runningAnimation = true;
 
 		if (animations.size === 0) {
-			cancelAnimationFrame(animationLoop);
-
 			return;
 		}
 
 		animations.forEach((fn) => {
 			if (!fn) {
-				cancelAnimationFrame(animationLoop);
+				pauseAnimation();
 				throw new Error('Animation function must not be null');
 			}
 
 			if (typeof fn !== 'function') {
-				cancelAnimationFrame(animationLoop);
+				pauseAnimation();
 				throw new Error('Animation function must be function');
 			}
 
@@ -76,30 +80,19 @@
 		const context = canvas.getContext('2d');
 		if (!context) throw new Error('Browser does not support canvas');
 		ctx = context;
-		runningAnimation = true;
 
-		return () => {
-			runningAnimation = false;
-			cancelAnimationFrame(animationLoop);
-		};
-	});
-
-	afterUpdate(async () => {
-		if (!ctx || !runningAnimation) return;
-
-		cancelAnimationFrame(animationLoop);
 		await tick();
 		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
 
 		if (renders.size > 0) {
-			await tick();
 			runRenders();
 		}
 
 		if (animations.size > 0) {
-			await tick();
 			runAnimations();
 		}
+
+		return pauseAnimation;
 	});
 </script>
 
@@ -118,7 +111,20 @@
 <slot />
 <svelte:window
 	on:resize|passive={() => {
+		pauseAnimation();
 		setCanvasSize(container);
+
+		tick().then(() => {
+			scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
+
+			if (renders.size > 0) {
+				runRenders();
+			}
+
+			if (animations.size > 0) {
+				runAnimations();
+			}
+		});
 	}}
 	on:keypress|preventDefault={(e) => {
 		if (e.code === 'Space') {
@@ -127,5 +133,3 @@
 		}
 	}}
 />
-<!-- <svelte:body
-	 /> -->
