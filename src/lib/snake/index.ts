@@ -1,6 +1,5 @@
 /**
  * TODO:
- * - add the ability for the snake to move
  * - actually write good documentation🙄
  */
 
