@@ -73,11 +73,6 @@ export default class Snake implements GamePiece {
 	move() {
 		if (!this.drawn) return;
 
-		this.moveHead();
-		this.moveTail();
-	}
-
-	private moveHead() {
 		if (this.head.direction === 'right') {
 			this.head.x2 += this.speed;
 		}
@@ -93,9 +88,7 @@ export default class Snake implements GamePiece {
 		if (this.head.direction === 'down') {
 			this.head.y2 += this.speed;
 		}
-	}
 
-	private moveTail() {
 		if (this.tail.direction === 'right') {
 			this.tail.x1 += this.speed;
 		}
