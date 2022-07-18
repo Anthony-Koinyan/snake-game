@@ -15,7 +15,7 @@ export interface RenderObject {
 	animate: boolean;
 }
 
-export interface Context {
+export interface RenderContext {
 	addRenderFn(data: RenderObject): void;
 	removeRenderFn(fn: RenderFn): void;
 }
