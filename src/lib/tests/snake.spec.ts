@@ -352,7 +352,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowUp'
 		});
 
-		expect(snake.body.length).toBe(2);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x2 - thickness);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -377,7 +377,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowUp'
 		});
 
-		expect(snake.body.length).toBe(2);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x1 + thickness);
@@ -403,7 +403,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowDown'
 		});
 
-		expect(snake.body.length).toBe(2);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('down');
 		expect(snake.head.x1).toBe(position[0].x2 - thickness);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -428,7 +428,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowDown'
 		});
 
-		expect(snake.body.length).toBe(2);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('down');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x1 + thickness);
@@ -454,7 +454,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowLeft'
 		});
 
-		expect(snake.body.length).toBe(2);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('left');
 		expect(snake.head.x1).toBe(position[0].x1 - speed);
 		expect(snake.head.x2).toBe(position[0].x1);
@@ -480,7 +480,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowLeft'
 		});
 
-		expect(snake.body.length).toBe(2);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('left');
 		expect(snake.head.x1).toBe(position[0].x1 - speed);
 		expect(snake.head.x2).toBe(position[0].x1);
@@ -506,7 +506,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowRight'
 		});
 
-		expect(snake.body.length).toBe(2);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('right');
 		expect(snake.head.x1).toBe(position[0].x2);
 		expect(snake.head.x2).toBe(position[0].x2 + speed);
@@ -532,7 +532,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowRight'
 		});
 
-		expect(snake.body.length).toBe(2);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('right');
 		expect(snake.head.x1).toBe(position[0].x2);
 		expect(snake.head.x2).toBe(position[0].x2 + speed);
@@ -558,7 +558,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowLeft'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('left');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -573,7 +573,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowRight'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('right');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -596,7 +596,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowUp'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -611,7 +611,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowDown'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('down');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -637,7 +637,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowUp'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('left');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -648,7 +648,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowDown'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('left');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -663,7 +663,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowUp'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('right');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -674,7 +674,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowDown'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('right');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -697,7 +697,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowLeft'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -708,7 +708,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowRight'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -723,7 +723,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowLeft'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -734,7 +734,7 @@ describe("snake's direction can be changed to up or down", () => {
 			charCode: 'ArrowRight'
 		});
 
-		expect(snake.body.length).toBe(1);
+		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
