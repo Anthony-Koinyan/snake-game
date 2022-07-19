@@ -129,7 +129,7 @@ export default class Snake implements GamePiece {
 	changeDirection(direction: SnakePosition['direction']) {
 		if (direction === 'right') {
 			if (this.head.direction === 'right' || this.head.direction === 'left') return;
-			if (this.head.y2 - this.head.y1 < this.thickness) return;
+			if (this.head.y2 - this.head.y1 < this.thickness * 2) return;
 
 			this.head = {
 				x1: this.head.x1,
@@ -142,7 +142,7 @@ export default class Snake implements GamePiece {
 
 		if (direction === 'left') {
 			if (this.head.direction === 'right' || this.head.direction === 'left') return;
-			if (this.head.y2 - this.head.y1 < this.thickness) return;
+			if (this.head.y2 - this.head.y1 < this.thickness * 2) return;
 
 			this.head = {
 				x1: this.head.x1,
@@ -155,7 +155,7 @@ export default class Snake implements GamePiece {
 
 		if (direction === 'up') {
 			if (this.head.direction === 'up' || this.head.direction === 'down') return;
-			if (this.head.x2 - this.head.x1 < this.thickness) return;
+			if (this.head.x2 - this.head.x1 < this.thickness * 2) return;
 
 			this.head = {
 				x1: this.head.direction === 'right' ? this.head.x2 - this.thickness : this.head.x1,
@@ -168,7 +168,7 @@ export default class Snake implements GamePiece {
 
 		if (direction === 'down') {
 			if (this.head.direction === 'up' || this.head.direction === 'down') return;
-			if (this.head.x2 - this.head.x1 < this.thickness) return;
+			if (this.head.x2 - this.head.x1 < this.thickness * 2) return;
 
 			this.head = {
 				x1: this.head.direction === 'right' ? this.head.x2 - this.thickness : this.head.x1,
