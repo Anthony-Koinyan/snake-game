@@ -1,6 +1,6 @@
 // TODO: move this to test folder
 
-import { fireEvent, render, screen } from '@testing-library/svelte';
+import { render, screen } from '@testing-library/svelte';
 import { get } from 'svelte/store';
 import Snake from '../snake';
 import type { SnakePosition } from '../snake';
@@ -354,8 +354,8 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x2 - thickness);
 		expect(snake.head.x2).toBe(position[0].x2);
-		expect(snake.head.y1).toBe(position[0].y1 - speed);
-		expect(snake.head.y2).toBe(position[0].y1);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
 	});
 
 	it('adds new snake head with direction up and new position if snake.changeDirection is called with up and old direction is left', () => {
@@ -377,11 +377,11 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x1 + thickness);
-		expect(snake.head.y1).toBe(position[0].y1 - speed);
-		expect(snake.head.y2).toBe(position[0].y1);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
 	});
 
-	it('adds new snake head with direction down and new position if snake.changeDirection is called with up and old direction is right', () => {
+	it('adds new snake head with direction down and new position if snake.changeDirection is called with down and old direction is right', () => {
 		position = [
 			{
 				x1: 40,
@@ -400,11 +400,11 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.direction).toBe('down');
 		expect(snake.head.x1).toBe(position[0].x2 - thickness);
 		expect(snake.head.x2).toBe(position[0].x2);
-		expect(snake.head.y1).toBe(position[0].y2);
-		expect(snake.head.y2).toBe(position[0].y2 + speed);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
 	});
 
-	it('adds new snake head with direction down and new position if snake.changeDirection is called with up and old direction is left', () => {
+	it('adds new snake head with direction down and new position if snake.changeDirection is called with down and old direction is left', () => {
 		position = [
 			{
 				x1: 40,
@@ -423,11 +423,11 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.direction).toBe('down');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x1 + thickness);
-		expect(snake.head.y1).toBe(position[0].y2);
-		expect(snake.head.y2).toBe(position[0].y2 + speed);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
 	});
 
-	it('adds new snake head with direction left and new position if snake.changeDirection is called with up and old direction is up', () => {
+	it('adds new snake head with direction left and new position if snake.changeDirection is called with left and old direction is up', () => {
 		position = [
 			{
 				x1: 40,
@@ -444,13 +444,13 @@ describe("snake's direction can be changed to up or down", () => {
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('left');
-		expect(snake.head.x1).toBe(position[0].x1 - speed);
-		expect(snake.head.x2).toBe(position[0].x1);
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
 		expect(snake.head.y1).toBe(position[0].y1);
 		expect(snake.head.y2).toBe(position[0].y1 + thickness);
 	});
 
-	it('adds new snake head with direction left and new position if snake.changeDirection is called with up and old direction is down', () => {
+	it('adds new snake head with direction left and new position if snake.changeDirection is called with left and old direction is down', () => {
 		position = [
 			{
 				x1: 40,
@@ -467,13 +467,13 @@ describe("snake's direction can be changed to up or down", () => {
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('left');
-		expect(snake.head.x1).toBe(position[0].x1 - speed);
-		expect(snake.head.x2).toBe(position[0].x1);
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
 		expect(snake.head.y1).toBe(position[0].y2 - thickness);
 		expect(snake.head.y2).toBe(position[0].y2);
 	});
 
-	it('adds new snake head with direction right and new position if snake.changeDirection is called with up and old direction is up', () => {
+	it('adds new snake head with direction right and new position if snake.changeDirection is called with right and old direction is up', () => {
 		position = [
 			{
 				x1: 40,
@@ -490,13 +490,13 @@ describe("snake's direction can be changed to up or down", () => {
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('right');
-		expect(snake.head.x1).toBe(position[0].x2);
-		expect(snake.head.x2).toBe(position[0].x2 + speed);
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
 		expect(snake.head.y1).toBe(position[0].y1);
 		expect(snake.head.y2).toBe(position[0].y1 + thickness);
 	});
 
-	it('adds new snake head with direction right and new position if snake.changeDirection is called with up and old direction is down', () => {
+	it('adds new snake head with direction right and new position if snake.changeDirection is called with right and old direction is down', () => {
 		position = [
 			{
 				x1: 40,
@@ -513,8 +513,8 @@ describe("snake's direction can be changed to up or down", () => {
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('right');
-		expect(snake.head.x1).toBe(position[0].x2);
-		expect(snake.head.x2).toBe(position[0].x2 + speed);
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
 		expect(snake.head.y1).toBe(position[0].y2 - thickness);
 		expect(snake.head.y2).toBe(position[0].y2);
 	});
