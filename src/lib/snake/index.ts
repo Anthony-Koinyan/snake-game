@@ -43,6 +43,10 @@ export default class Snake implements GamePiece {
 		this.body.push(position);
 	}
 
+	get position() {
+		return JSON.parse(JSON.stringify(this.body));
+	}
+
 	removeTail() {
 		this.body.pop();
 	}
@@ -90,19 +94,89 @@ export default class Snake implements GamePiece {
 		}
 
 		if (this.tail.direction === 'right') {
+			if (this.tail.x1 + this.thickness === this.tail.x2) {
+				this.body.pop();
+				return;
+			}
 			this.tail.x1 += this.speed;
 		}
 
 		if (this.tail.direction === 'left') {
+			if (this.tail.x1 + this.thickness === this.tail.x2) {
+				this.body.pop();
+				return;
+			}
 			this.tail.x2 -= this.speed;
 		}
 
 		if (this.tail.direction === 'up') {
+			if (this.tail.y1 + this.thickness === this.tail.y2) {
+				this.body.pop();
+				return;
+			}
 			this.tail.y2 -= this.speed;
 		}
 
 		if (this.tail.direction === 'down') {
+			if (this.tail.y1 + this.thickness === this.tail.y2) {
+				this.body.pop();
+				return;
+			}
 			this.tail.y1 += this.speed;
+		}
+	}
+
+	changeDirection(direction: SnakePosition['direction']) {
+		if (direction === 'right') {
+			if (this.head.direction === 'right' || this.head.direction === 'left') return;
+			if (this.head.y2 - this.head.y1 < this.thickness) return;
+
+			this.head = {
+				x1: this.head.x1,
+				x2: this.head.x2,
+				y1: this.head.direction === 'up' ? this.head.y1 : this.head.y2 - this.thickness,
+				y2: this.head.direction === 'up' ? this.head.y1 + this.thickness : this.head.y2,
+				direction: 'right'
+			};
+		}
+
+		if (direction === 'left') {
+			if (this.head.direction === 'right' || this.head.direction === 'left') return;
+			if (this.head.y2 - this.head.y1 < this.thickness) return;
+
+			this.head = {
+				x1: this.head.x1,
+				x2: this.head.x2,
+				y1: this.head.direction === 'up' ? this.head.y1 : this.head.y2 - this.thickness,
+				y2: this.head.direction === 'up' ? this.head.y1 + this.thickness : this.head.y2,
+				direction: 'left'
+			};
+		}
+
+		if (direction === 'up') {
+			if (this.head.direction === 'up' || this.head.direction === 'down') return;
+			if (this.head.x2 - this.head.x1 < this.thickness) return;
+
+			this.head = {
+				x1: this.head.direction === 'right' ? this.head.x2 - this.thickness : this.head.x1,
+				x2: this.head.direction === 'right' ? this.head.x2 : this.head.x1 + this.thickness,
+				y1: this.head.y1,
+				y2: this.head.y2,
+				direction: 'up'
+			};
+		}
+
+		if (direction === 'down') {
+			if (this.head.direction === 'up' || this.head.direction === 'down') return;
+			if (this.head.x2 - this.head.x1 < this.thickness) return;
+
+			this.head = {
+				x1: this.head.direction === 'right' ? this.head.x2 - this.thickness : this.head.x1,
+				x2: this.head.direction === 'right' ? this.head.x2 : this.head.x1 + this.thickness,
+				y1: this.head.y1,
+				y2: this.head.y2,
+				direction: 'down'
+			};
 		}
 	}
 }
