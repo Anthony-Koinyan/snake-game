@@ -1,6 +1,6 @@
 // TODO: move this to test folder
 
-import { render, screen } from '@testing-library/svelte';
+import { fireEvent, render, screen } from '@testing-library/svelte';
 import { get } from 'svelte/store';
 import Snake from '../snake';
 import type { SnakePosition } from '../snake';
@@ -309,5 +309,436 @@ describe('the snake can move', () => {
 		expect(snake.tail.x2).toBe(position[position.length - 1].x2);
 		expect(snake.tail.y1).toBe(position[position.length - 1].y1);
 		expect(snake.tail.y2).toBe(position[position.length - 1].y2 - speed);
+	});
+});
+
+describe("snake's direction can be changed to up or down", () => {
+	let ctx: CanvasRenderingContext2D;
+	let speed: number;
+	let thickness: number;
+	let snake: Snake | null;
+	let position: SnakePosition[] | [];
+
+	beforeEach(() => {
+		speed = get(SNAKE_SPEED);
+		thickness = get(GAME_PIECE_MIN_SIZE);
+
+		render(Canvas, {
+			props: {
+				container: document.createElement('section')
+			}
+		});
+
+		const canvas: HTMLCanvasElement = screen.getByTestId('canvas');
+		ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+		snake = null;
+		position = [];
+	});
+
+	it('changes the snake direction to up and updates the snake body if the up arrow key is pressed and snake direction is right', () => {
+		position = [
+			{
+				x1: 40,
+				x2: 190,
+				y1: 300,
+				y2: 300 + thickness,
+				direction: 'right'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowUp'
+		});
+
+		expect(snake.body.length).toBe(2);
+		expect(snake.head.direction).toBe('up');
+		expect(snake.head.x1).toBe(position[0].x2 - thickness);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1 - speed);
+		expect(snake.head.y2).toBe(position[0].y1);
+	});
+
+	it('changes the snake direction to up and updates the snake body if the up arrow key is pressed and snake direction is left', () => {
+		position = [
+			{
+				x1: 40,
+				x2: 190,
+				y1: 300,
+				y2: 300 + thickness,
+				direction: 'left'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowUp'
+		});
+
+		expect(snake.body.length).toBe(2);
+		expect(snake.head.direction).toBe('up');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x1 + thickness);
+		expect(snake.head.y1).toBe(position[0].y1 - speed);
+		expect(snake.head.y2).toBe(position[0].y1);
+	});
+
+	it('changes the snake direction to down and updates the snake body if the down arrow key is pressed and snake direction is right', () => {
+		position = [
+			{
+				x1: 40,
+				x2: 190,
+				y1: 300,
+				y2: 300 + thickness,
+				direction: 'right'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowDown'
+		});
+
+		expect(snake.body.length).toBe(2);
+		expect(snake.head.direction).toBe('down');
+		expect(snake.head.x1).toBe(position[0].x2 - thickness);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y2);
+		expect(snake.head.y2).toBe(position[0].y2 + speed);
+	});
+
+	it('changes the snake direction to down and updates the snake body if the down arrow key is pressed and snake direction is left', () => {
+		position = [
+			{
+				x1: 40,
+				x2: 190,
+				y1: 300,
+				y2: 300 + thickness,
+				direction: 'left'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowDown'
+		});
+
+		expect(snake.body.length).toBe(2);
+		expect(snake.head.direction).toBe('down');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x1 + thickness);
+		expect(snake.head.y1).toBe(position[0].y2);
+		expect(snake.head.y2).toBe(position[0].y2 + speed);
+	});
+
+	it('changes the snake direction to left and updates the snake body if the left arrow key is pressed and snake direction is up', () => {
+		position = [
+			{
+				x1: 40,
+				x2: 40 + thickness,
+				y1: 150,
+				y2: 300,
+				direction: 'up'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowLeft'
+		});
+
+		expect(snake.body.length).toBe(2);
+		expect(snake.head.direction).toBe('left');
+		expect(snake.head.x1).toBe(position[0].x1 - speed);
+		expect(snake.head.x2).toBe(position[0].x1);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y1 - thickness);
+	});
+
+	it('changes the snake direction to left and updates the snake body if the left arrow key is pressed and snake direction is down', () => {
+		position = [
+			{
+				x1: 40,
+				x2: 40 + thickness,
+				y1: 150,
+				y2: 300,
+				direction: 'down'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowLeft'
+		});
+
+		expect(snake.body.length).toBe(2);
+		expect(snake.head.direction).toBe('left');
+		expect(snake.head.x1).toBe(position[0].x1 - speed);
+		expect(snake.head.x2).toBe(position[0].x1);
+		expect(snake.head.y1).toBe(position[0].y2 - thickness);
+		expect(snake.head.y2).toBe(position[0].y2);
+	});
+
+	it('changes the snake direction to right and updates the snake body if the right arrow key is pressed and snake direction is up', () => {
+		position = [
+			{
+				x1: 40,
+				x2: 40 + thickness,
+				y1: 150,
+				y2: 300,
+				direction: 'up'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowRight'
+		});
+
+		expect(snake.body.length).toBe(2);
+		expect(snake.head.direction).toBe('right');
+		expect(snake.head.x1).toBe(position[0].x2);
+		expect(snake.head.x2).toBe(position[0].x2 + speed);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y1 + thickness);
+	});
+
+	it('changes the snake direction to right and updates the snake body if the right arrow key is pressed and snake direction is down', () => {
+		position = [
+			{
+				x1: 40,
+				x2: 40 + thickness,
+				y1: 150,
+				y2: 300,
+				direction: 'up'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowRight'
+		});
+
+		expect(snake.body.length).toBe(2);
+		expect(snake.head.direction).toBe('right');
+		expect(snake.head.x1).toBe(position[0].x2);
+		expect(snake.head.x2).toBe(position[0].x2 + speed);
+		expect(snake.head.y1).toBe(position[0].y2 - thickness);
+		expect(snake.head.y2).toBe(position[0].y2);
+	});
+
+	it("doesn't change the snake's direction if the arrow key pressed dorection is the same as the snake's direction", () => {
+		position = [
+			{
+				x1: 40,
+				x2: 190,
+				y1: 300,
+				y2: 300 + thickness,
+				direction: 'left'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowLeft'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('left');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		position[0].direction = 'right';
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowRight'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('right');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		position = [
+			{
+				x1: 40,
+				x2: 40 + thickness,
+				y1: 150,
+				y2: 300,
+				direction: 'up'
+			}
+		];
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowUp'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('up');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		position[0].direction = 'down';
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowDown'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('down');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+	});
+
+	it("doesn't change direction if the length of the head (x2 - x1 if direction is left or right, y2 - y1 if direction is up or down) is less that thickness", () => {
+		position = [
+			{
+				x1: 40,
+				x2: 190,
+				y1: 300,
+				y2: 301,
+				direction: 'left'
+			}
+		];
+
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowUp'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('left');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowDown'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('left');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		position[0].direction = 'right';
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowUp'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('right');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowDown'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('right');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		position = [
+			{
+				x1: 40,
+				x2: 40 + thickness,
+				y1: 150,
+				y2: 300,
+				direction: 'up'
+			}
+		];
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowLeft'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('up');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowRight'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('up');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		position[0].direction = 'down';
+		snake = new Snake(position, speed, thickness);
+		snake.draw(ctx);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowLeft'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('up');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
+
+		fireEvent.keyPress(window, {
+			charCode: 'ArrowRight'
+		});
+
+		expect(snake.body.length).toBe(1);
+		expect(snake.head.direction).toBe('up');
+		expect(snake.head.x1).toBe(position[0].x1);
+		expect(snake.head.x2).toBe(position[0].x2);
+		expect(snake.head.y1).toBe(position[0].y1);
+		expect(snake.head.y2).toBe(position[0].y2);
 	});
 });
