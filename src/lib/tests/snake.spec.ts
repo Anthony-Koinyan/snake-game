@@ -447,7 +447,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.x1).toBe(position[0].x1 - speed);
 		expect(snake.head.x2).toBe(position[0].x1);
 		expect(snake.head.y1).toBe(position[0].y1);
-		expect(snake.head.y2).toBe(position[0].y1 - thickness);
+		expect(snake.head.y2).toBe(position[0].y1 + thickness);
 	});
 
 	it('changes the snake direction to left and updates the snake body if the left arrow key is pressed and snake direction is down', () => {
@@ -503,7 +503,7 @@ describe("snake's direction can be changed to up or down", () => {
 				x2: 40 + thickness,
 				y1: 150,
 				y2: 300,
-				direction: 'up'
+				direction: 'down'
 			}
 		];
 
@@ -519,7 +519,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y2).toBe(position[0].y2);
 	});
 
-	it("doesn't change the snake's direction if the arrow key pressed dorection is the same as the snake's direction", () => {
+	it("doesn't change the snake's direction if the arrow key pressed direction is the same as the snake's direction", () => {
 		position = [
 			{
 				x1: 40,
@@ -608,7 +608,7 @@ describe("snake's direction can be changed to up or down", () => {
 		snake.draw(ctx);
 		snake.changeDirection('up');
 
-		expect(snake.position.length).toBe(1);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('left');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -617,7 +617,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake.changeDirection('down');
 
-		expect(snake.position.length).toBe(1);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('left');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -646,7 +646,7 @@ describe("snake's direction can be changed to up or down", () => {
 		snake.draw(ctx);
 		snake.changeDirection('up');
 
-		expect(snake.position.length).toBe(1);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('right');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -655,7 +655,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake.changeDirection('down');
 
-		expect(snake.position.length).toBe(1);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('right');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -683,7 +683,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake.changeDirection('left');
 
-		expect(snake.position.length).toBe(1);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -692,7 +692,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake.changeDirection('right');
 
-		expect(snake.position.length).toBe(1);
+		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('up');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
@@ -721,8 +721,8 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake.changeDirection('left');
 
-		expect(snake.position.length).toBe(1);
-		expect(snake.head.direction).toBe('up');
+		expect(snake.position.length).toBe(2);
+		expect(snake.head.direction).toBe('down');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
 		expect(snake.head.y1).toBe(position[0].y1);
@@ -730,8 +730,8 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake.changeDirection('right');
 
-		expect(snake.position.length).toBe(1);
-		expect(snake.head.direction).toBe('up');
+		expect(snake.position.length).toBe(2);
+		expect(snake.head.direction).toBe('down');
 		expect(snake.head.x1).toBe(position[0].x1);
 		expect(snake.head.x2).toBe(position[0].x2);
 		expect(snake.head.y1).toBe(position[0].y1);
