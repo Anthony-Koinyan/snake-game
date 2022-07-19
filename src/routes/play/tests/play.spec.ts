@@ -11,8 +11,6 @@ describe('checking for default content on initial render', () => {
 		const ctx = canvas.getContext('2d');
 		await act();
 		await act();
-		await act();
-		await act();
 		expect(ctx?.fillRect).toBeCalledTimes(1);
 		expect(screen.getByText(0)).toBeInTheDocument();
 	});
