@@ -348,9 +348,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowUp'
-		});
+		snake.changeDirection('up');
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('up');
@@ -373,9 +371,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowUp'
-		});
+		snake.changeDirection('up');
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('up');
@@ -398,10 +394,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowDown'
-		});
+		snake.changeDirection('down');
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('down');
@@ -424,9 +417,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowDown'
-		});
+		snake.changeDirection('down');
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('down');
@@ -449,10 +440,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowLeft'
-		});
+		snake.changeDirection('left');
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('left');
@@ -475,10 +463,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowLeft'
-		});
+		snake.changeDirection('left');
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('left');
@@ -501,10 +486,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowRight'
-		});
+		snake.changeDirection('right');
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('right');
@@ -527,10 +509,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowRight'
-		});
+		snake.changeDirection('right');
 
 		expect(snake.position.length).toBe(2);
 		expect(snake.head.direction).toBe('right');
@@ -553,10 +532,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowLeft'
-		});
+		snake.changeDirection('left');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('left');
@@ -568,10 +544,7 @@ describe("snake's direction can be changed to up or down", () => {
 		position[0].direction = 'right';
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowRight'
-		});
+		snake.changeDirection('right');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('right');
@@ -591,10 +564,7 @@ describe("snake's direction can be changed to up or down", () => {
 		];
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowUp'
-		});
+		snake.changeDirection('up');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
@@ -606,10 +576,7 @@ describe("snake's direction can be changed to up or down", () => {
 		position[0].direction = 'down';
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowDown'
-		});
+		snake.changeDirection('down');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('down');
@@ -632,10 +599,7 @@ describe("snake's direction can be changed to up or down", () => {
 
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowUp'
-		});
+		snake.changeDirection('up');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('left');
@@ -644,9 +608,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y1).toBe(position[0].y1);
 		expect(snake.head.y2).toBe(position[0].y2);
 
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowDown'
-		});
+		snake.changeDirection('down');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('left');
@@ -658,10 +620,7 @@ describe("snake's direction can be changed to up or down", () => {
 		position[0].direction = 'right';
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
-
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowUp'
-		});
+		snake.changeDirection('up');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('right');
@@ -670,9 +629,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y1).toBe(position[0].y1);
 		expect(snake.head.y2).toBe(position[0].y2);
 
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowDown'
-		});
+		snake.changeDirection('down');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('right');
@@ -693,9 +650,7 @@ describe("snake's direction can be changed to up or down", () => {
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
 
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowLeft'
-		});
+		snake.changeDirection('left');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
@@ -704,9 +659,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y1).toBe(position[0].y1);
 		expect(snake.head.y2).toBe(position[0].y2);
 
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowRight'
-		});
+		snake.changeDirection('right');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
@@ -719,9 +672,7 @@ describe("snake's direction can be changed to up or down", () => {
 		snake = new Snake(position, speed, thickness);
 		snake.draw(ctx);
 
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowLeft'
-		});
+		snake.changeDirection('left');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
@@ -730,9 +681,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y1).toBe(position[0].y1);
 		expect(snake.head.y2).toBe(position[0].y2);
 
-		fireEvent.keyPress(window, {
-			charCode: 'ArrowRight'
-		});
+		snake.changeDirection('right');
 
 		expect(snake.position.length).toBe(1);
 		expect(snake.head.direction).toBe('up');
