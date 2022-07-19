@@ -335,7 +335,7 @@ describe("snake's direction can be changed to up or down", () => {
 		position = [];
 	});
 
-	it('changes the snake direction to up and updates the snake body if the up arrow key is pressed and snake direction is right', () => {
+	it('adds new snake head with direction up and new position if snake.changeDirection is called with up and old direction is right', () => {
 		position = [
 			{
 				x1: 40,
@@ -358,7 +358,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y2).toBe(position[0].y1);
 	});
 
-	it('changes the snake direction to up and updates the snake body if the up arrow key is pressed and snake direction is left', () => {
+	it('adds new snake head with direction up and new position if snake.changeDirection is called with up and old direction is left', () => {
 		position = [
 			{
 				x1: 40,
@@ -381,7 +381,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y2).toBe(position[0].y1);
 	});
 
-	it('changes the snake direction to down and updates the snake body if the down arrow key is pressed and snake direction is right', () => {
+	it('adds new snake head with direction down and new position if snake.changeDirection is called with up and old direction is right', () => {
 		position = [
 			{
 				x1: 40,
@@ -404,7 +404,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y2).toBe(position[0].y2 + speed);
 	});
 
-	it('changes the snake direction to down and updates the snake body if the down arrow key is pressed and snake direction is left', () => {
+	it('adds new snake head with direction down and new position if snake.changeDirection is called with up and old direction is left', () => {
 		position = [
 			{
 				x1: 40,
@@ -427,7 +427,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y2).toBe(position[0].y2 + speed);
 	});
 
-	it('changes the snake direction to left and updates the snake body if the left arrow key is pressed and snake direction is up', () => {
+	it('adds new snake head with direction left and new position if snake.changeDirection is called with up and old direction is up', () => {
 		position = [
 			{
 				x1: 40,
@@ -450,7 +450,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y2).toBe(position[0].y1 + thickness);
 	});
 
-	it('changes the snake direction to left and updates the snake body if the left arrow key is pressed and snake direction is down', () => {
+	it('adds new snake head with direction left and new position if snake.changeDirection is called with up and old direction is down', () => {
 		position = [
 			{
 				x1: 40,
@@ -473,7 +473,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y2).toBe(position[0].y2);
 	});
 
-	it('changes the snake direction to right and updates the snake body if the right arrow key is pressed and snake direction is up', () => {
+	it('adds new snake head with direction right and new position if snake.changeDirection is called with up and old direction is up', () => {
 		position = [
 			{
 				x1: 40,
@@ -496,7 +496,7 @@ describe("snake's direction can be changed to up or down", () => {
 		expect(snake.head.y2).toBe(position[0].y1 + thickness);
 	});
 
-	it('changes the snake direction to right and updates the snake body if the right arrow key is pressed and snake direction is down', () => {
+	it('adds new snake head with direction right and new position if snake.changeDirection is called with up and old direction is down', () => {
 		position = [
 			{
 				x1: 40,
