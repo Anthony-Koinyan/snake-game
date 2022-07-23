@@ -119,12 +119,6 @@ describe('renders snake and clears snake properly', () => {
 		snake.clear(ctx);
 
 		expect(ctx.clearRect).toBeCalled();
-		expect(ctx.clearRect).toBeCalledWith(
-			position[0].x1 - 2,
-			position[0].y1 - 2,
-			position[0].x2 - position[0].x1 + 4,
-			position[0].y2 - position[0].y1 + 4
-		);
 	});
 
 	it("clears rectangle for all position when snake body's length greater than 1", () => {
