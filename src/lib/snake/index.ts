@@ -63,11 +63,51 @@ export default class Snake implements GamePiece {
 		if (!this.drawn) return;
 
 		for (const position of this.body) {
+			if (this.body.indexOf(position) === this.body.length - 1) {
+				if (position.direction === 'right') {
+					ctx.clearRect(
+						position.x1 - this.speed - 1,
+						position.y1 - 1,
+						position.x2 - position.x1 /* + this.speed */ + 2,
+						position.y2 - position.y1 + 2
+					);
+				}
+
+				if (position.direction === 'left') {
+					ctx.clearRect(
+						position.x1 - 1,
+						position.y1 - 1,
+						position.x2 - position.x1 + this.speed + 2,
+						position.y2 - position.y1 + 2
+					);
+				}
+
+				if (position.direction === 'up') {
+					ctx.clearRect(
+						position.x1 - 1,
+						position.y1 - 1,
+						position.x2 - position.x1 + 2,
+						position.y2 - position.y1 + this.speed + 2
+					);
+				}
+
+				if (position.direction === 'down') {
+					ctx.clearRect(
+						position.x1 - 1,
+						position.y1 - this.speed - 1,
+						position.x2 - position.x1 + 2,
+						position.y2 - position.y1 + 2
+					);
+				}
+
+				return;
+			}
+
 			ctx.clearRect(
-				position.x1 - 2,
-				position.y1 - 2,
-				position.x2 - position.x1 + 4,
-				position.y2 - position.y1 + 4
+				position.x1 - 1,
+				position.y1 - 1,
+				position.x2 - position.x1 + 2,
+				position.y2 - position.y1 + 2
 			);
 		}
 
@@ -94,7 +134,10 @@ export default class Snake implements GamePiece {
 		}
 
 		if (this.tail.direction === 'right') {
-			if (this.tail.x1 + this.thickness === this.tail.x2) {
+			if (
+				this.tail.x1 + this.thickness === this.tail.x2 ||
+				this.tail.x1 + this.thickness > this.tail.x2
+			) {
 				this.body.pop();
 				return;
 			}
@@ -102,7 +145,10 @@ export default class Snake implements GamePiece {
 		}
 
 		if (this.tail.direction === 'left') {
-			if (this.tail.x1 + this.thickness === this.tail.x2) {
+			if (
+				this.tail.x1 + this.thickness === this.tail.x2 ||
+				this.tail.x1 + this.thickness > this.tail.x2
+			) {
 				this.body.pop();
 				return;
 			}
@@ -110,7 +156,10 @@ export default class Snake implements GamePiece {
 		}
 
 		if (this.tail.direction === 'up') {
-			if (this.tail.y1 + this.thickness === this.tail.y2) {
+			if (
+				this.tail.y1 + this.thickness === this.tail.y2 ||
+				this.tail.y1 + this.thickness > this.tail.y2
+			) {
 				this.body.pop();
 				return;
 			}
@@ -118,7 +167,10 @@ export default class Snake implements GamePiece {
 		}
 
 		if (this.tail.direction === 'down') {
-			if (this.tail.y1 + this.thickness === this.tail.y2) {
+			if (
+				this.tail.y1 + this.thickness === this.tail.y2 ||
+				this.tail.y1 + this.thickness > this.tail.y2
+			) {
 				this.body.pop();
 				return;
 			}
