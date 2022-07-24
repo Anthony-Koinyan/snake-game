@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/svelte';
-import { FoodPosition } from './food/types';
+import type { FoodPosition } from '$lib/food/types';
 import Food from '../food';
 import Canvas from '../canvas/Canvas.svelte';
 import { GAME_PIECE_MIN_SIZE } from '../stores';
@@ -17,21 +17,20 @@ const match = {
 	}
 };
 
-const foodRadius = get(GAME_PIECE_MIN_SIZE);
+const radius = get(GAME_PIECE_MIN_SIZE);
 
 it('Instatiates the food class properly', () => {
-	const food = new Food(position);
+	const food = new Food(position, radius);
 	expect(food).toMatchObject(match);
 });
 
 it('returns a copy of position object if food.position is called', () => {
-	const food = new Food(position);
+	const food = new Food(position, radius);
 	expect(food.position).not.toBe(position);
 });
 
 describe('renders and clears food properly', () => {
 	let ctx: CanvasRenderingContext2D;
-	let position: FoodPosition[];
 	let food: Food;
 
 	beforeEach(() => {
@@ -45,14 +44,14 @@ describe('renders and clears food properly', () => {
 	});
 
 	it('draws a circle at position of food on the canvas', () => {
-		food = new Food(position);
+		food = new Food(position, radius);
 		food.draw(ctx);
-		expect(ctx?.arc).toBeCalledWith(foodPosition.x, foodPosition.y, foodRadius, 0, 2 * Math.PI);
+		expect(ctx?.arc).toBeCalledWith(position.x, position.y, radius, 0, 2 * Math.PI);
 		expect(ctx.fill).toBeCalledTimes(1);
 	});
 
 	it('only clears Food if Food has been drawn', () => {
-		const food = new Food(position);
+		const food = new Food(position, radius);
 
 		food.clear(ctx);
 		expect(ctx.clearRect).not.toBeCalled();
@@ -61,10 +60,10 @@ describe('renders and clears food properly', () => {
 		food.clear(ctx);
 
 		expect(ctx.clearRect).toBeCalledWith(
-			foodPosition.x - foodRadius,
-			foodPosition.y - foodRadius,
-			foodRadius * 2,
-			foodRadius * 2
+			position.x - radius,
+			position.y - radius,
+			radius * 2,
+			radius * 2
 		);
 	});
 });
