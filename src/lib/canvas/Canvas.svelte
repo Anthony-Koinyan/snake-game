@@ -101,7 +101,7 @@
 	height={$canvasSize.canvasHeight}
 	style:width={$canvasSize.styleWidth}
 	style:height={$canvasSize.styleHeight}
-	class="border-2 border-solid border-red-300 mx-auto"
+	class="border-2 border-solid border-black mx-auto"
 	bind:this={canvas}
 	data-testid="canvas"
 >
