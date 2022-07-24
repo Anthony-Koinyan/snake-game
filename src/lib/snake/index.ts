@@ -1,6 +1,11 @@
 /**
  * TODO:
- * - actually write good documentation🙄
+ * - ACTUALLY WRITE GOOD DOCUMENTATION
+ * FIXME:
+ * - FIX BUG WHERE SNAKE GETS LONGER WEN IT CHANGES DIRECTION
+ *
+ *  I SUSPECT THE CULPRIT IS THAT WHENEVER THE SNAKE.CHANGEDIRECTION METHOD IS CALLED IT
+ * 	ADDS 6 PIXELS TO THE HEAD
  */
 
 import type { GamePiece } from '../GamePiece';
@@ -45,10 +50,6 @@ export default class Snake implements GamePiece {
 
 	get position() {
 		return JSON.parse(JSON.stringify(this.body));
-	}
-
-	removeTail() {
-		this.body.pop();
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {
