@@ -2,4 +2,6 @@
 	import '../app.css';
 </script>
 
-<slot />
+<section class="font-mono">
+	<slot />
+</section>

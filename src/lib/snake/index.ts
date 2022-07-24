@@ -1,6 +1,11 @@
 /**
  * TODO:
- * - actually write good documentation🙄
+ * - ACTUALLY WRITE GOOD DOCUMENTATION
+ * FIXME:
+ * - FIX BUG WHERE SNAKE GETS LONGER WEN IT CHANGES DIRECTION
+ *
+ *  I SUSPECT THE CULPRIT IS THAT WHENEVER THE SNAKE.CHANGEDIRECTION METHOD IS CALLED IT
+ * 	ADDS 6 PIXELS TO THE HEAD
  */
 
 import type { GamePiece } from '../GamePiece';
@@ -43,8 +48,8 @@ export default class Snake implements GamePiece {
 		this.body.push(position);
 	}
 
-	removeTail() {
-		this.body.pop();
+	get position() {
+		return JSON.parse(JSON.stringify(this.body));
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {
@@ -59,11 +64,51 @@ export default class Snake implements GamePiece {
 		if (!this.drawn) return;
 
 		for (const position of this.body) {
+			if (this.body.indexOf(position) === this.body.length - 1) {
+				if (position.direction === 'right') {
+					ctx.clearRect(
+						position.x1 - this.speed - 1,
+						position.y1 - 1,
+						position.x2 - position.x1 /* + this.speed */ + 2,
+						position.y2 - position.y1 + 2
+					);
+				}
+
+				if (position.direction === 'left') {
+					ctx.clearRect(
+						position.x1 - 1,
+						position.y1 - 1,
+						position.x2 - position.x1 + this.speed + 2,
+						position.y2 - position.y1 + 2
+					);
+				}
+
+				if (position.direction === 'up') {
+					ctx.clearRect(
+						position.x1 - 1,
+						position.y1 - 1,
+						position.x2 - position.x1 + 2,
+						position.y2 - position.y1 + this.speed + 2
+					);
+				}
+
+				if (position.direction === 'down') {
+					ctx.clearRect(
+						position.x1 - 1,
+						position.y1 - this.speed - 1,
+						position.x2 - position.x1 + 2,
+						position.y2 - position.y1 + 2
+					);
+				}
+
+				return;
+			}
+
 			ctx.clearRect(
-				position.x1 - 2,
-				position.y1 - 2,
-				position.x2 - position.x1 + 4,
-				position.y2 - position.y1 + 4
+				position.x1 - 1,
+				position.y1 - 1,
+				position.x2 - position.x1 + 2,
+				position.y2 - position.y1 + 2
 			);
 		}
 
@@ -73,11 +118,6 @@ export default class Snake implements GamePiece {
 	move() {
 		if (!this.drawn) return;
 
-		this.moveHead();
-		this.moveTail();
-	}
-
-	private moveHead() {
 		if (this.head.direction === 'right') {
 			this.head.x2 += this.speed;
 		}
@@ -93,23 +133,103 @@ export default class Snake implements GamePiece {
 		if (this.head.direction === 'down') {
 			this.head.y2 += this.speed;
 		}
-	}
 
-	private moveTail() {
 		if (this.tail.direction === 'right') {
+			if (
+				this.tail.x1 + this.thickness === this.tail.x2 ||
+				this.tail.x1 + this.thickness > this.tail.x2
+			) {
+				this.body.pop();
+				return;
+			}
 			this.tail.x1 += this.speed;
 		}
 
 		if (this.tail.direction === 'left') {
+			if (
+				this.tail.x1 + this.thickness === this.tail.x2 ||
+				this.tail.x1 + this.thickness > this.tail.x2
+			) {
+				this.body.pop();
+				return;
+			}
 			this.tail.x2 -= this.speed;
 		}
 
 		if (this.tail.direction === 'up') {
+			if (
+				this.tail.y1 + this.thickness === this.tail.y2 ||
+				this.tail.y1 + this.thickness > this.tail.y2
+			) {
+				this.body.pop();
+				return;
+			}
 			this.tail.y2 -= this.speed;
 		}
 
 		if (this.tail.direction === 'down') {
+			if (
+				this.tail.y1 + this.thickness === this.tail.y2 ||
+				this.tail.y1 + this.thickness > this.tail.y2
+			) {
+				this.body.pop();
+				return;
+			}
 			this.tail.y1 += this.speed;
+		}
+	}
+
+	changeDirection(direction: SnakePosition['direction']) {
+		if (direction === 'right') {
+			if (this.head.direction === 'right' || this.head.direction === 'left') return;
+			if (this.head.y2 - this.head.y1 < this.thickness * 2) return;
+
+			this.head = {
+				x1: this.head.x1,
+				x2: this.head.x2,
+				y1: this.head.direction === 'up' ? this.head.y1 : this.head.y2 - this.thickness,
+				y2: this.head.direction === 'up' ? this.head.y1 + this.thickness : this.head.y2,
+				direction: 'right'
+			};
+		}
+
+		if (direction === 'left') {
+			if (this.head.direction === 'right' || this.head.direction === 'left') return;
+			if (this.head.y2 - this.head.y1 < this.thickness * 2) return;
+
+			this.head = {
+				x1: this.head.x1,
+				x2: this.head.x2,
+				y1: this.head.direction === 'up' ? this.head.y1 : this.head.y2 - this.thickness,
+				y2: this.head.direction === 'up' ? this.head.y1 + this.thickness : this.head.y2,
+				direction: 'left'
+			};
+		}
+
+		if (direction === 'up') {
+			if (this.head.direction === 'up' || this.head.direction === 'down') return;
+			if (this.head.x2 - this.head.x1 < this.thickness * 2) return;
+
+			this.head = {
+				x1: this.head.direction === 'right' ? this.head.x2 - this.thickness : this.head.x1,
+				x2: this.head.direction === 'right' ? this.head.x2 : this.head.x1 + this.thickness,
+				y1: this.head.y1,
+				y2: this.head.y2,
+				direction: 'up'
+			};
+		}
+
+		if (direction === 'down') {
+			if (this.head.direction === 'up' || this.head.direction === 'down') return;
+			if (this.head.x2 - this.head.x1 < this.thickness * 2) return;
+
+			this.head = {
+				x1: this.head.direction === 'right' ? this.head.x2 - this.thickness : this.head.x1,
+				x2: this.head.direction === 'right' ? this.head.x2 : this.head.x1 + this.thickness,
+				y1: this.head.y1,
+				y2: this.head.y2,
+				direction: 'down'
+			};
 		}
 	}
 }

@@ -3,4 +3,4 @@
 	export let description: string;
 </script>
 
-<a href={url} class="text-5xl font-mono hover:font-bold">{description}</a>
+<a href={url} class="text-5xl hover:font-bold">{description}</a>

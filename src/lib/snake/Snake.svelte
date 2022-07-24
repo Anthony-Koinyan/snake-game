@@ -17,3 +17,12 @@
 		animate: true
 	});
 </script>
+
+<svelte:window
+	on:keypress|preventDefault={(e) => {
+		if (e.code === 'KeyD') snake.changeDirection('right');
+		if (e.code === 'KeyA') snake.changeDirection('left');
+		if (e.code === 'KeyW') snake.changeDirection('up');
+		if (e.code === 'KeyS') snake.changeDirection('down');
+	}}
+/>
