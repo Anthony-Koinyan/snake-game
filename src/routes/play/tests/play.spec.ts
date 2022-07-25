@@ -10,7 +10,7 @@ describe('checking for default content on initial render', () => {
 	it('has the snake and the scoreboard', async () => {
 		const snakePosition = get(SNAKE_START_POSITION);
 		const foodPosition = get(FOOD_POSITION);
-		const foodRadius = get(GAME_PIECE_MIN_SIZE);
+		const foodRadius = get(GAME_PIECE_MIN_SIZE) / 2;
 		render(Play);
 
 		const canvas: HTMLCanvasElement = screen.getByTestId('canvas');

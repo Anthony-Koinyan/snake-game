@@ -17,7 +17,7 @@ const match = {
 	}
 };
 
-const radius = get(GAME_PIECE_MIN_SIZE);
+const radius = get(GAME_PIECE_MIN_SIZE) / 2;
 
 it('Instatiates the food class properly', () => {
 	const food = new Food(position, radius);
