@@ -6,7 +6,7 @@
 	import { FOOD_POSITION } from './store';
 
 	const { addRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
-	const food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE);
+	const food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE / 2);
 
 	addRenderFn({
 		renderFn: (ctx) => {
