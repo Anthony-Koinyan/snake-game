@@ -2,11 +2,11 @@ import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen } from '@testing-library/svelte';
 import { get } from 'svelte/store';
 import Play from '../index.svelte';
+import { GAME_PIECE_MIN_SIZE, LEVEL, SCOREBOARD } from '$lib/stores';
 import { SNAKE_START_POSITION, SNAKE_CURRENT_POSITION } from '$lib/snake/store';
-import { GAME_PIECE_MIN_SIZE } from '$lib/stores';
 import type { SnakePosition } from '$lib/snake';
 import { FOOD_POSITION } from '$lib/food/store';
-// import type { FoodPosition } from '$lib/food/types';
+import type { FoodPosition } from '$lib/food/types';
 
 describe('checking for default content on initial render', () => {
 	const snakePosition = get(SNAKE_START_POSITION);
@@ -52,7 +52,7 @@ describe('tests for gameplay elements', () => {
 	});
 
 	const getSnakeCurrentPosition = () => get(SNAKE_CURRENT_POSITION) as SnakePosition[];
-	// const getFoodCurrentPosition = () => get(FOOD_POSITION) as FoodPosition;
+	const getFoodCurrentPosition = () => get(FOOD_POSITION) as FoodPosition;
 
 	describe('snake can move', () => {
 		it('moves the snake', async () => {
@@ -87,16 +87,64 @@ describe('tests for gameplay elements', () => {
 		});
 	});
 
-	// describe('game updates properly when snake eats food', () => {
-	// 	beforeEach(() => {});
+	describe('game updates properly when snake eats food', () => {
+		let scoreboard: HTMLElement;
+		const level = get(LEVEL);
+		let previousFoodPosition: FoodPosition;
+		let previousSnakePosition: SnakePosition[];
 
-	// 	it('changes food position', () => {});
-	// 	it('draws food with its new position and clears the previous food', () => {});
-	// 	it('increases the snake length', () => {});
-	// 	it('updates the scoreboard', () => {});
+		beforeEach(async () => {
+			scoreboard = screen.getByText(0);
 
-	// 	afterEach(() => {});
-	// });
+			FOOD_POSITION.update(() => {
+				return { x: 175, y: 99 };
+			});
+
+			previousFoodPosition = getFoodCurrentPosition();
+			previousSnakePosition = getSnakeCurrentPosition();
+			await act(() => jest.advanceTimersByTime(64));
+		});
+
+		it('changes food position', () => {
+			expect(getFoodCurrentPosition()).not.toEqual(previousFoodPosition);
+		});
+
+		it('draws food with its new position and clears the previous food', () => {
+			const ctx = (screen.getByTestId('canvas') as HTMLCanvasElement).getContext('2d');
+			const foodPosition = getFoodCurrentPosition();
+			const radius = get(GAME_PIECE_MIN_SIZE) / 2;
+
+			expect(ctx?.arc).toBeCalledWith(foodPosition.x, foodPosition.y, radius, 0, 2 * Math.PI);
+			expect(ctx?.fill).toBeCalledTimes(1);
+
+			expect(ctx?.clearRect).toBeCalledWith(
+				previousFoodPosition.x - radius,
+				previousFoodPosition.y - radius,
+				radius * 2,
+				radius * 2
+			);
+		});
+
+		it('increases the snake length', () => {
+			const snakePosition = getSnakeCurrentPosition();
+
+			expect(snakePosition[0].x2 - snakePosition[0].x1).toBe(
+				previousSnakePosition[0].x2 - previousSnakePosition[0].x1 + 3
+			);
+		});
+
+		it('updates the scoreboard', () => {
+			expect(scoreboard.textContent).toBe(`${level}`);
+		});
+
+		afterEach(() => {
+			SCOREBOARD.update(() => 0);
+			SNAKE_CURRENT_POSITION.update(() => null);
+			FOOD_POSITION.update(() => {
+				return { x: 50, y: 90 };
+			});
+		});
+	});
 
 	afterEach(() => {
 		jest.runOnlyPendingTimers();
