@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
 	import { GAME_PIECE_MIN_SIZE, RENDER_CONTEXT_KEY } from '$lib/stores';
-	import { SNAKE_SPEED, SNAKE_START_POSITION } from './store';
+	import { SNAKE_SPEED, SNAKE_START_POSITION, SNAKE_CURRENT_POSITION } from './store';
 	import Snake from './index';
 	import type { RenderContext } from '../canvas/types';
 
@@ -13,6 +13,7 @@
 			snake.clear(ctx);
 			snake.draw(ctx);
 			snake.move();
+			SNAKE_CURRENT_POSITION.update(() => snake.position);
 		},
 		animate: true
 	});

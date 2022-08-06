@@ -9,3 +9,5 @@ export const SNAKE_START_POSITION = writable<SnakePosition>({
 	y2: 103,
 	direction: 'right'
 });
+
+export const SNAKE_CURRENT_POSITION = writable<SnakePosition[] | null>(null);
