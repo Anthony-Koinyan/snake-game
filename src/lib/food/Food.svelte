@@ -5,8 +5,10 @@
 	import Food from './index';
 	import { FOOD_POSITION } from './store';
 
+	export let redraw = false;
+
 	const { addRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
-	const food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE / 2);
+	let food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE / 2);
 
 	addRenderFn({
 		renderFn: (ctx) => {
@@ -14,4 +16,15 @@
 		},
 		animate: false
 	});
+
+	$: if (redraw) {
+		addRenderFn({
+			renderFn: (ctx) => {
+				food.clear(ctx);
+				food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE / 2);
+				food.draw(ctx);
+			},
+			animate: false
+		});
+	}
 </script>
