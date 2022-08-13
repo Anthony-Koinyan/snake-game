@@ -56,7 +56,7 @@ describe('tests for gameplay elements', () => {
 	});
 
 	const getSnakeCurrentPosition = () => get(SNAKE_CURRENT_POSITION) as SnakePosition[];
-	const getFoodCurrentPosition = () => get(FOOD_POSITION); /* as FoodPosition */
+	const getFoodCurrentPosition = () => get(FOOD_POSITION);
 
 	describe('snake can move', () => {
 		it('moves the snake', async () => {
