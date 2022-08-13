@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from '@testing-library/svelte';
 import { get } from 'svelte/store';
 import Play from '../index.svelte';
 import { GAME_PIECE_MIN_SIZE, LEVEL, SCOREBOARD } from '$lib/stores';
-import { SNAKE_START_POSITION, SNAKE_CURRENT_POSITION } from '$lib/snake/store';
+import { SNAKE_POSITION } from '$lib/snake/store';
 import type { SnakePosition } from '$lib/snake';
 import { FOOD_POSITION } from '$lib/food/store';
 import type { FoodPosition } from '$lib/food/types';
@@ -13,7 +13,7 @@ const advanceTimersByTime = async (time: number) => {
 };
 
 describe('checking for default content on initial render', () => {
-	const snakePosition = get(SNAKE_START_POSITION);
+	const [snakePosition] = get(SNAKE_POSITION);
 	const foodPosition = get(FOOD_POSITION);
 	const foodRadius = get(GAME_PIECE_MIN_SIZE) / 2;
 	let ctx: CanvasRenderingContext2D | null;
@@ -55,7 +55,7 @@ describe('tests for gameplay elements', () => {
 		await act();
 	});
 
-	const getSnakeCurrentPosition = () => get(SNAKE_CURRENT_POSITION) as SnakePosition[];
+	const getSnakeCurrentPosition = () => get(SNAKE_POSITION);
 	const getFoodCurrentPosition = () => get(FOOD_POSITION);
 
 	describe('snake can move', () => {
@@ -143,7 +143,15 @@ describe('tests for gameplay elements', () => {
 
 		afterEach(() => {
 			SCOREBOARD.update(() => 0);
-			SNAKE_CURRENT_POSITION.update(() => null);
+			SNAKE_POSITION.update(() => [
+				{
+					x1: 130,
+					x2: 170,
+					y1: 97,
+					y2: 103,
+					direction: 'right'
+				}
+			]);
 			FOOD_POSITION.update(() => {
 				return { x: 50, y: 90 };
 			});

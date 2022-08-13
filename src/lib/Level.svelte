@@ -3,10 +3,11 @@
 	import Food from './food/Food.svelte';
 	import { GAME_PIECE_MIN_SIZE } from './stores';
 	import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from './canvas/store';
-	import { SNAKE_CURRENT_POSITION } from './snake/store';
+	import { SNAKE_POSITION } from './snake/store';
 	import { FOOD_POSITION } from './food/store';
+	import type { SnakePosition } from './snake';
 
-	$: snakeHead = $SNAKE_CURRENT_POSITION ? $SNAKE_CURRENT_POSITION[0] : null;
+	$: snakeHead = $SNAKE_POSITION ? $SNAKE_POSITION[0] : null;
 
 	$: eaten = (() => {
 		if (!snakeHead) return false;
