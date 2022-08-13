@@ -8,6 +8,10 @@ import type { SnakePosition } from '$lib/snake';
 import { FOOD_POSITION } from '$lib/food/store';
 import type { FoodPosition } from '$lib/food/types';
 
+const advanceTimersByTime = async (time: number) => {
+	await act(() => jest.advanceTimersByTime(time));
+};
+
 describe('checking for default content on initial render', () => {
 	const snakePosition = get(SNAKE_START_POSITION);
 	const foodPosition = get(FOOD_POSITION);
@@ -52,12 +56,12 @@ describe('tests for gameplay elements', () => {
 	});
 
 	const getSnakeCurrentPosition = () => get(SNAKE_CURRENT_POSITION) as SnakePosition[];
-	const getFoodCurrentPosition = () => get(FOOD_POSITION) as FoodPosition;
+	const getFoodCurrentPosition = () => get(FOOD_POSITION); /* as FoodPosition */
 
 	describe('snake can move', () => {
 		it('moves the snake', async () => {
 			const snakePosition = getSnakeCurrentPosition();
-			await act(() => jest.advanceTimersByTime(16));
+			await advanceTimersByTime(16);
 			expect(getSnakeCurrentPosition()).not.toEqual(snakePosition);
 		});
 
@@ -66,22 +70,22 @@ describe('tests for gameplay elements', () => {
 			expect(getSnakeCurrentPosition()[0].direction).toBe('right');
 
 			fireEvent.keyPress(window, { key: 'W', code: 'KeyW' });
-			await act(() => jest.advanceTimersByTime(100));
+			await advanceTimersByTime(100);
 			expect(getSnakeCurrentPosition().length).toBe(2);
 			expect(getSnakeCurrentPosition()[0].direction).toBe('up');
 
 			fireEvent.keyPress(window, { key: 'D', code: 'KeyD' });
-			await act(() => jest.advanceTimersByTime(100));
+			await advanceTimersByTime(100);
 			expect(getSnakeCurrentPosition().length).toBe(3);
 			expect(getSnakeCurrentPosition()[0].direction).toBe('right');
 
 			fireEvent.keyPress(window, { key: 'S', code: 'KeyS' });
-			await act(() => jest.advanceTimersByTime(100));
+			await advanceTimersByTime(100);
 			expect(getSnakeCurrentPosition().length).toBe(4);
 			expect(getSnakeCurrentPosition()[0].direction).toBe('down');
 
 			fireEvent.keyPress(window, { key: 'A', code: 'KeyA' });
-			await act(() => jest.advanceTimersByTime(100));
+			await advanceTimersByTime(100);
 			expect(getSnakeCurrentPosition().length).toBe(5);
 			expect(getSnakeCurrentPosition()[0].direction).toBe('left');
 		});
@@ -102,7 +106,7 @@ describe('tests for gameplay elements', () => {
 
 			previousFoodPosition = getFoodCurrentPosition();
 			previousSnakePosition = getSnakeCurrentPosition();
-			await act(() => jest.advanceTimersByTime(64));
+			await advanceTimersByTime(64);
 		});
 
 		it('changes food position', () => {
