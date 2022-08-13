@@ -17,6 +17,7 @@ export default class Food implements GamePiece {
 	}
 
 	draw(ctx: CanvasRenderingContext2D) {
+		ctx.beginPath();
 		ctx.arc(this.body.x, this.body.y, this.radius, 0, 2 * Math.PI);
 		ctx.fill();
 		this.drawn = true;
@@ -25,6 +26,7 @@ export default class Food implements GamePiece {
 	clear(ctx: CanvasRenderingContext2D) {
 		if (!this.drawn) return;
 
+		ctx.closePath();
 		ctx.clearRect(
 			this.body.x - this.radius,
 			this.body.y - this.radius,
