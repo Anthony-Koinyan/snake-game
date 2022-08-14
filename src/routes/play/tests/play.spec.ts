@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen } from '@testing-library/svelte';
 import { get } from 'svelte/store';
 import Play from '../index.svelte';
 import { GAME_PIECE_MIN_SIZE, DIFFICULTY, SCOREBOARD } from '$lib/stores';
-import { SNAKE_POSITION } from '$lib/snake/store';
+import { SNAKE_POSITION, SNAKE_SPEED } from '$lib/snake/store';
 import type { SnakePosition } from '$lib/snake';
 import { FOOD_POSITION } from '$lib/food/store';
 import type { FoodPosition } from '$lib/food/types';
@@ -84,6 +84,15 @@ describe('snake can move', () => {
 		const snakePosition = getSnakeCurrentPosition();
 		await advanceTimersByTime(16); // 1 animation frame
 		expect(getSnakeCurrentPosition()).not.toEqual(snakePosition);
+	});
+
+	it('has a speed equal to SNAKE_SPEED store', async () => {
+		const speed = get(SNAKE_SPEED);
+		const previousSnakePosition = getSnakeCurrentPosition();
+
+		await advanceTimersByTime(16); // 1 animation frame
+		const currentSnakePosition = getSnakeCurrentPosition();
+		expect(currentSnakePosition[0].x2 - previousSnakePosition[0].x2).toBe(speed);
 	});
 
 	it('can change snake direction with "WASD" keys', async () => {
