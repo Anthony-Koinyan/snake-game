@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { act, fireEvent, render, screen } from '@testing-library/svelte';
 import { get } from 'svelte/store';
 import Play from '../index.svelte';
-import { GAME_PIECE_MIN_SIZE, LEVEL, SCOREBOARD } from '$lib/stores';
+import { GAME_PIECE_MIN_SIZE, DIFFICULTY, SCOREBOARD } from '$lib/stores';
 import { SNAKE_POSITION } from '$lib/snake/store';
 import type { SnakePosition } from '$lib/snake';
 import { FOOD_POSITION } from '$lib/food/store';
@@ -114,7 +114,6 @@ describe('snake can move', () => {
 
 describe('game updates properly when snake eats food', () => {
 	let scoreboard: HTMLElement;
-	const level = get(LEVEL);
 	let previousFoodPosition: FoodPosition;
 	let previousSnakePosition: SnakePosition[];
 
@@ -155,6 +154,7 @@ describe('game updates properly when snake eats food', () => {
 	});
 
 	it('updates the scoreboard', () => {
-		expect(scoreboard.textContent).toBe(`${level}`);
+		const difficulty = get(DIFFICULTY);
+		expect(scoreboard.textContent).toBe(`${difficulty.increment}`);
 	});
 });

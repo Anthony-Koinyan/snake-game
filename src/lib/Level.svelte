@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Snake from './snake/Snake.svelte';
 	import Food from './food/Food.svelte';
-	import { GAME_PIECE_MIN_SIZE } from './stores';
+	import { DIFFICULTY, GAME_PIECE_MIN_SIZE, SCOREBOARD } from './stores';
 	import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from './canvas/store';
 	import { SNAKE_POSITION } from './snake/store';
 	import { FOOD_POSITION } from './food/store';
@@ -56,6 +56,8 @@
 
 				return position;
 			});
+
+			SCOREBOARD.update((score) => score + $DIFFICULTY.increment);
 		}
 	}
 </script>

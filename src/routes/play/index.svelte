@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Canvas from '$lib/canvas/Canvas.svelte';
 	import Level from '$lib/Level.svelte';
+	import { SCOREBOARD } from '$lib/stores';
 
 	let container: HTMLElement;
 </script>
@@ -11,5 +12,5 @@
 			<Level />
 		</Canvas>
 	</section>
-	<section class="text-2xl text-center h-1/6 w-full pt-1/3">0</section>
+	<section class="text-2xl text-center h-1/6 w-full pt-1/3">{$SCOREBOARD}</section>
 </section>
