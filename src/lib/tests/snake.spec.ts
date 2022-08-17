@@ -178,7 +178,6 @@ describe('renders snake and clears snake properly', () => {
 	});
 });
 
-// TODO: test behaviour when snake's tail is equal to thickness
 describe('the snake can move', () => {
 	it("doesn't move the snake if it has not been drawn", () => {
 		const { snake, createdWith } = createSnake('down', 'right');
