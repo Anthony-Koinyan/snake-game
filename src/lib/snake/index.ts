@@ -10,6 +10,7 @@
 
 import type { GamePiece } from '../GamePiece';
 
+// TODO: MOVE THIS TO GLOBAL TYPES FOLDER
 export interface SnakePosition {
 	x1: number;
 	x2: number;
@@ -61,7 +62,9 @@ export default class Snake implements GamePiece {
 	}
 
 	clear(ctx: CanvasRenderingContext2D) {
-		if (!this.drawn) return;
+		if (!this.drawn) {
+			return console.warn('Snake.clear called before snake was drawn');
+		}
 
 		for (const position of this.body) {
 			if (this.body.indexOf(position) === this.body.length - 1) {
@@ -116,7 +119,9 @@ export default class Snake implements GamePiece {
 	}
 
 	move() {
-		if (!this.drawn) return;
+		if (!this.drawn) {
+			return console.warn('Snake.move called before snake was drawn');
+		}
 
 		if (this.head.direction === 'right') {
 			this.head.x2 += this.speed;
@@ -180,6 +185,10 @@ export default class Snake implements GamePiece {
 	}
 
 	changeDirection(direction: SnakePosition['direction']) {
+		if (!this.drawn) {
+			return console.warn('Snake.changeDirection called before snake was drawn');
+		}
+
 		if (direction === 'right') {
 			if (this.head.direction === 'right' || this.head.direction === 'left') return;
 			if (this.head.y2 - this.head.y1 < this.thickness * 2) return;
