@@ -37,19 +37,20 @@
 		}
 	});
 
-	const runRenders = () => {
-		renders.forEach((fn) => {
-			if (!fn) throw new Error('Render function must not be null');
-			if (typeof fn !== 'function') throw new Error('Render function must be function');
-			fn(ctx);
-		});
-	};
-
 	const runAnimations = () => {
 		runningAnimation = true;
 
+		if (renders.size > 0) {
+			renders.forEach((fn) => {
+				if (!fn) throw new Error('Render function must not be null');
+				if (typeof fn !== 'function') throw new Error('Render function must be function');
+				fn(ctx);
+				renders.delete(fn);
+			});
+		}
+
 		if (animations.size === 0) {
-			return;
+			return pauseAnimation();
 		}
 
 		animations.forEach((fn) => {
@@ -84,10 +85,6 @@
 		await tick();
 		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
 
-		if (renders.size > 0) {
-			runRenders();
-		}
-
 		if (animations.size > 0) {
 			runAnimations();
 		}
@@ -116,10 +113,6 @@
 
 		tick().then(() => {
 			scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
-
-			if (renders.size > 0) {
-				runRenders();
-			}
 
 			if (animations.size > 0) {
 				runAnimations();
