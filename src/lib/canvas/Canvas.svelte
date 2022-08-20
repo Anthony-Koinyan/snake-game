@@ -6,7 +6,9 @@
 	import { setCanvasSize, scaleCanvasDrawings } from './setCanvasSize';
 	import type { RenderFn, RenderObject, RenderContext } from './types';
 
-	export let container: HTMLElement;
+	export let containerHeight = 400;
+	export let containerWidth = 600;
+
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
 	let animationLoop: number;
@@ -77,7 +79,7 @@
 
 	onMount(async () => {
 		await tick();
-		setCanvasSize(container);
+		setCanvasSize(containerHeight, containerWidth);
 		const context = canvas.getContext('2d');
 		if (!context) throw new Error('Browser does not support canvas');
 		ctx = context;
@@ -85,6 +87,7 @@
 		await tick();
 		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
 
+		// TODO: Remove this check, it's redundant; the function already does it
 		if (animations.size > 0) {
 			runAnimations();
 		}
@@ -108,12 +111,14 @@
 <slot />
 <svelte:window
 	on:resize|passive={() => {
+		// TODO: Make this not run animations if it was paused before
 		pauseAnimation();
-		setCanvasSize(container);
+		setCanvasSize(containerHeight, containerWidth);
 
 		tick().then(() => {
 			scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
 
+			// TODO: Remove this check, it's redundant; the function already does it
 			if (animations.size > 0) {
 				runAnimations();
 			}

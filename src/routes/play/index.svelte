@@ -4,11 +4,20 @@
 	import { SCOREBOARD } from '$lib/stores';
 
 	let container: HTMLElement;
+
+	let containerHeight = 400;
+	let containerWidth = 600;
+	$: {
+		if (container) {
+			containerHeight = container.clientHeight;
+			containerWidth = container.clientWidth;
+		}
+	}
 </script>
 
 <section class="flex flex-col justify-between items-center h-screen w-5/6 max-h-screen mx-auto">
 	<section bind:this={container} class="h-2/3 sm:h-5/6 w-full my-0">
-		<Canvas {container}>
+		<Canvas {containerHeight} {containerWidth}>
 			<Level />
 		</Canvas>
 	</section>
