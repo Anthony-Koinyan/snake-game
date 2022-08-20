@@ -119,6 +119,19 @@ describe('snake can move', () => {
 		expect(getSnakeCurrentPosition().length).toBe(5);
 		expect(getSnakeCurrentPosition()[0].direction).toBe('left');
 	});
+
+	// TODO: write a test to check that the sanke can eat itself
+
+	// it("doesn't move when it hits itself", async () => {
+	// 	fireEvent.keyPress(window, { key: 'W', code: 'KeyW' }); // MOVE SNAKE UP
+	// 	await advanceTimersByTime(100); // 6 steps (16ms per frame, 1 frame per step)
+	// 	fireEvent.keyPress(window, { key: 'A', code: 'KeyA' }); // MOVE SNAKE LEFT
+	// 	await advanceTimersByTime(100); // 6 steps (16ms per frame, 1 frame per step)
+	// 	fireEvent.keyPress(window, { key: 'S', code: 'KeyS' }); // MOVE SNAKE DOWN
+	// 	await advanceTimersByTime(100); // 6 steps (16ms per frame, 1 frame per step)
+	// 	const snakePosition = getSnakeCurrentPosition();
+	// 	expect(snakePosition[0].y2 - snakePosition[0].y1).toBe(6);
+	// });
 });
 
 describe('game updates properly when snake eats food', () => {

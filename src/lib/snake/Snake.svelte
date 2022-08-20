@@ -5,18 +5,28 @@
 	import Snake from './index';
 	import type { RenderContext } from '../canvas/types';
 
-	const { addRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
+	export let deleteAnimation = false;
+
+	const { addRenderFn, removeRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
 	const snake = new Snake($SNAKE_POSITION, $SNAKE_SPEED, $GAME_PIECE_MIN_SIZE);
 
+	const renderFn = (ctx: CanvasRenderingContext2D) => {
+		snake.clear(ctx);
+		snake.draw(ctx);
+		snake.move();
+		SNAKE_POSITION.update(() => snake.position);
+	};
+
 	addRenderFn({
-		renderFn: (ctx: CanvasRenderingContext2D) => {
-			snake.clear(ctx);
-			snake.draw(ctx);
-			snake.move();
-			SNAKE_POSITION.update(() => snake.position);
-		},
+		renderFn,
 		animate: true
 	});
+
+	$: {
+		if (deleteAnimation) {
+			removeRenderFn(renderFn);
+		}
+	}
 </script>
 
 <svelte:window
