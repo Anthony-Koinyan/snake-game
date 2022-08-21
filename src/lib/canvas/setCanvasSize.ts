@@ -22,10 +22,12 @@ export const scaleCanvasDrawings = (ctx: CanvasRenderingContext2D, scaleFactor: 
 	ctx.scale(scaleFactor * pixelRatio, scaleFactor * pixelRatio);
 };
 
-export const setCanvasSize = (containerHeight: number, containertWidth: number) => {
+export const setCanvasSize = (canvas: HTMLElement) => {
 	const WIDTH = get(DEFAULT_CANVAS_WIDTH);
 	const HEIGHT = get(DEFAULT_CANVAS_HEIGHT);
-	const scale = getCanvasScaleFactor(WIDTH, HEIGHT, containertWidth, containerHeight);
+	const parentWidth = canvas.parentElement?.clientWidth as number;
+	const parentHeight = canvas.parentElement?.clientHeight as number;
+	const scale = getCanvasScaleFactor(WIDTH, HEIGHT, parentWidth, parentHeight);
 	const pixelRatio = window.devicePixelRatio || 1;
 
 	canvasSize.update(
