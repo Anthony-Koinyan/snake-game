@@ -22,6 +22,10 @@
 			} else {
 				if (renders.has(data.renderFn)) renders.delete(data.renderFn);
 				renders.add(data.renderFn);
+
+				if (canvas) {
+					runRenders();
+				}
 			}
 		},
 		removeRenderFn(fn: RenderFn) {
