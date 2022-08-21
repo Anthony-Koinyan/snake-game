@@ -7,24 +7,21 @@
 
 	export let redraw = false;
 
-	const { addRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
-	let food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE / 2);
+	const { addRenderFn, removeRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
+	let food: Food;
 
-	addRenderFn({
-		renderFn: (ctx) => {
-			food.draw(ctx);
-		},
-		animate: false
-	});
+	const renderFn = (ctx: CanvasRenderingContext2D) => {
+		if (redraw) {
+			food.clear(ctx);
+		}
+		food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE / 2);
+		food.draw(ctx);
+	};
 
-	$: if (redraw) {
-		addRenderFn({
-			renderFn: (ctx) => {
-				food.clear(ctx);
-				food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE / 2);
-				food.draw(ctx);
-			},
-			animate: false
-		});
+	$: {
+		if (redraw) {
+			removeRenderFn(renderFn);
+		}
+		addRenderFn({ renderFn, animate: false });
 	}
 </script>
