@@ -22,7 +22,6 @@
 
 		/**
 		 * FIXME:
-		 * - Sometimes part of the food is drawn outside the canvas
 		 * - Sometimes part of the food is drawn in the snake position
 		 */
 		const foodPosition = {
@@ -56,6 +55,23 @@
 	$: {
 		if (eaten) {
 			FOOD_POSITION.update(() => {
+				const generateNewPosition = (): { x: number; y: number } => {
+					const position = {
+						x: Math.round(Math.random() * $DEFAULT_CANVAS_WIDTH),
+						y: Math.round(Math.random() * $DEFAULT_CANVAS_HEIGHT)
+					};
+
+					if (
+						position.x > $DEFAULT_CANVAS_WIDTH - $GAME_PIECE_MIN_SIZE / 2 ||
+						position.x < $GAME_PIECE_MIN_SIZE ||
+						position.y > $DEFAULT_CANVAS_HEIGHT - $GAME_PIECE_MIN_SIZE / 2 ||
+						position.y < $GAME_PIECE_MIN_SIZE
+					) {
+						return generateNewPosition();
+					}
+
+					return position;
+				};
 				return {
 					x: Math.round(Math.random() * $DEFAULT_CANVAS_WIDTH),
 					y: Math.round(Math.random() * $DEFAULT_CANVAS_HEIGHT)
