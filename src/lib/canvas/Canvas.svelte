@@ -6,13 +6,10 @@
 	import { setCanvasSize, scaleCanvasDrawings } from './setCanvasSize';
 	import type { RenderFn, RenderObject, RenderContext } from './types';
 
-	export let containerHeight = 400;
-	export let containerWidth = 600;
-
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
 	let animationLoop: number;
-	let runningAnimation = false;
+	let isAnimationRunning = false;
 
 	const renders = new Set<RenderFn>();
 	const animations = new Set<RenderFn>();
@@ -40,14 +37,13 @@
 	});
 
 	const runAnimations = () => {
-		runningAnimation = true;
+		isAnimationRunning = true;
 
 		if (renders.size > 0) {
 			renders.forEach((fn) => {
 				if (!fn) throw new Error('Render function must not be null');
 				if (typeof fn !== 'function') throw new Error('Render function must be function');
 				fn(ctx);
-				renders.delete(fn);
 			});
 		}
 
@@ -74,23 +70,19 @@
 
 	const pauseAnimation = () => {
 		cancelAnimationFrame(animationLoop);
-		runningAnimation = false;
+		isAnimationRunning = false;
 	};
 
 	onMount(async () => {
 		await tick();
-		setCanvasSize(containerHeight, containerWidth);
+		setCanvasSize(canvas);
 		const context = canvas.getContext('2d');
 		if (!context) throw new Error('Browser does not support canvas');
 		ctx = context;
 
 		await tick();
 		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
-
-		// TODO: Remove this check, it's redundant; the function already does it
-		if (animations.size > 0) {
-			runAnimations();
-		}
+		runAnimations();
 
 		return pauseAnimation;
 	});
@@ -111,22 +103,19 @@
 <slot />
 <svelte:window
 	on:resize|passive={() => {
-		// TODO: Make this not run animations if it was paused before
+		const wasAnimationRunning = isAnimationRunning;
 		pauseAnimation();
-		setCanvasSize(containerHeight, containerWidth);
+		setCanvasSize(canvas);
 
 		tick().then(() => {
 			scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
-
-			// TODO: Remove this check, it's redundant; the function already does it
-			if (animations.size > 0) {
-				runAnimations();
-			}
+			runAnimations();
+			if (!wasAnimationRunning) pauseAnimation();
 		});
 	}}
 	on:keypress|preventDefault={(e) => {
 		if (e.code === 'Space') {
-			if (runningAnimation === true) pauseAnimation();
+			if (isAnimationRunning) pauseAnimation();
 			else runAnimations();
 		}
 	}}
