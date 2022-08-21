@@ -34,12 +34,12 @@ describe('renders and clears food properly', () => {
 	let food: Food;
 
 	beforeEach(() => {
-		render(Canvas, {
-			props: {
-				container: document.createElement('section')
-			}
-		});
+		render(Canvas);
+		const container = document.createElement('section');
+		container.style.width = '600px';
+		container.style.height = '400px';
 		const canvas: HTMLCanvasElement = screen.getByTestId('canvas');
+		container.appendChild(canvas);
 		ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 	});
 

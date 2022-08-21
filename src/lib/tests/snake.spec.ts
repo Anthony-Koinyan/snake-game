@@ -39,15 +39,13 @@ describe('Instatiates the snake class properly', () => {
 let ctx: CanvasRenderingContext2D;
 
 beforeEach(() => {
-	render(Canvas, {
-		props: {
-			container: document.createElement('section')
-		}
-	});
-
-	ctx = (screen.getByTestId('canvas') as HTMLCanvasElement).getContext(
-		'2d'
-	) as CanvasRenderingContext2D;
+	render(Canvas);
+	const container = document.createElement('section');
+	container.style.width = '600px';
+	container.style.height = '400px';
+	const canvas: HTMLCanvasElement = screen.getByTestId('canvas');
+	container.appendChild(canvas);
+	ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 });
 
 const moveSnakeBySteps = (snake: Snake, steps: number) => {
