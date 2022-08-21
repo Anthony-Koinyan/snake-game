@@ -36,9 +36,7 @@
 		}
 	});
 
-	const runAnimations = () => {
-		isAnimationRunning = true;
-
+	const runRenders = () => {
 		if (renders.size > 0) {
 			renders.forEach((fn) => {
 				if (!fn) throw new Error('Render function must not be null');
@@ -46,6 +44,10 @@
 				fn(ctx);
 			});
 		}
+	};
+
+	const runAnimations = () => {
+		isAnimationRunning = true;
 
 		if (animations.size === 0) {
 			return pauseAnimation();
@@ -85,7 +87,6 @@
 
 	onMount(async () => {
 		await tick();
-
 		const { width, height } = getCanvasParentElementDimensions();
 		setCanvasSize(width, height);
 
@@ -95,6 +96,7 @@
 
 		await tick();
 		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
+		runRenders();
 		runAnimations();
 
 		return pauseAnimation;
@@ -116,7 +118,7 @@
 <slot />
 <svelte:window
 	on:resize|passive={() => {
-		const wasAnimationRunning = isAnimationRunning;
+		const wasAnimationRunningBeforeResize = isAnimationRunning;
 		pauseAnimation();
 
 		const { width, height } = getCanvasParentElementDimensions();
@@ -124,8 +126,10 @@
 
 		tick().then(() => {
 			scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
+			runRenders();
+			// FIXME: Don't move an animation frame on resize just draw
 			runAnimations();
-			if (!wasAnimationRunning) pauseAnimation();
+			if (!wasAnimationRunningBeforeResize) pauseAnimation();
 		});
 	}}
 	on:keypress|preventDefault={(e) => {
