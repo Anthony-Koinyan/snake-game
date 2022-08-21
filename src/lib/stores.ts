@@ -17,13 +17,10 @@ enum difficulties {
 // TODO: make this a store (I think, not sure🤷🏾‍♂️)
 export const RENDER_CONTEXT_KEY = Symbol();
 
-export const GAME_PIECE_MIN_SIZE = readable(6);
+export const GAME_PIECE_MIN_SIZE = readable(12);
 export const SCOREBOARD = writable(0);
 export const DIFFICULTIES = readable(difficulties);
-export const DIFFICULTY = writable<{
-	name: string;
-	increment: difficulties;
-}>({
+export const DIFFICULTY = writable({
 	name: 'baby steps',
 	increment: difficulties['baby steps']
 });
