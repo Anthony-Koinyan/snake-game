@@ -7,10 +7,6 @@ const getCanvasScaleFactor = (
 	maxWidth: number,
 	maxHeight: number
 ) => {
-	if (originalWidth > maxWidth || originalHeight > maxHeight) {
-		return 1;
-	}
-
 	const heightScale = maxHeight / originalHeight;
 	const widthScale = maxWidth / originalWidth;
 	return Math.min(heightScale, widthScale);
@@ -22,12 +18,10 @@ export const scaleCanvasDrawings = (ctx: CanvasRenderingContext2D, scaleFactor: 
 	ctx.scale(scaleFactor * pixelRatio, scaleFactor * pixelRatio);
 };
 
-export const setCanvasSize = (canvas: HTMLElement) => {
+export const setCanvasSize = (containertWidth: number, containerHeight: number) => {
 	const WIDTH = get(DEFAULT_CANVAS_WIDTH);
 	const HEIGHT = get(DEFAULT_CANVAS_HEIGHT);
-	const parentWidth = canvas.parentElement?.clientWidth as number;
-	const parentHeight = canvas.parentElement?.clientHeight as number;
-	const scale = getCanvasScaleFactor(WIDTH, HEIGHT, parentWidth, parentHeight);
+	const scale = getCanvasScaleFactor(WIDTH, HEIGHT, containertWidth, containerHeight);
 	const pixelRatio = window.devicePixelRatio || 1;
 
 	canvasSize.update(

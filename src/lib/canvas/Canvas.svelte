@@ -73,9 +73,22 @@
 		isAnimationRunning = false;
 	};
 
+	const getCanvasParentElementDimensions = () => {
+		const parent = canvas.parentElement;
+
+		if (!parent) {
+			throw new Error('Error mounting component');
+		}
+
+		return { width: parent.clientWidth, height: parent?.clientHeight };
+	};
+
 	onMount(async () => {
 		await tick();
-		setCanvasSize(canvas);
+
+		const { width, height } = getCanvasParentElementDimensions();
+		setCanvasSize(width, height);
+
 		const context = canvas.getContext('2d');
 		if (!context) throw new Error('Browser does not support canvas');
 		ctx = context;
@@ -105,7 +118,9 @@
 	on:resize|passive={() => {
 		const wasAnimationRunning = isAnimationRunning;
 		pauseAnimation();
-		setCanvasSize(canvas);
+
+		const { width, height } = getCanvasParentElementDimensions();
+		setCanvasSize(width, height);
 
 		tick().then(() => {
 			scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
