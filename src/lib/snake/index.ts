@@ -8,6 +8,8 @@
  * 	ADDS 6 PIXELS TO THE HEAD
  */
 
+import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '$lib/canvas/store';
+import { get } from 'svelte/store';
 import type { GamePiece } from '../GamePiece';
 
 // TODO: MOVE THIS TO GLOBAL TYPES FOLDER
@@ -18,6 +20,8 @@ export interface SnakePosition {
 	y2: number;
 	direction: 'right' | 'left' | 'up' | 'down';
 }
+
+const canvasBoundary = { width: get(DEFAULT_CANVAS_WIDTH), height: get(DEFAULT_CANVAS_HEIGHT) };
 
 export default class Snake implements GamePiece {
 	private body: SnakePosition[];
@@ -72,7 +76,7 @@ export default class Snake implements GamePiece {
 					ctx.clearRect(
 						position.x1 - this.speed - 1,
 						position.y1 - 1,
-						position.x2 - position.x1 /* + this.speed */ + 2,
+						position.x2 - position.x1 + 2,
 						position.y2 - position.y1 + 2
 					);
 				}
@@ -117,12 +121,7 @@ export default class Snake implements GamePiece {
 
 		this.drawn = false;
 	}
-
-	move() {
-		if (!this.drawn) {
-			return console.warn('Snake.move called before snake was drawn');
-		}
-
+	private moveHead() {
 		if (this.head.direction === 'right') {
 			this.head.x2 += this.speed;
 		}
@@ -138,15 +137,17 @@ export default class Snake implements GamePiece {
 		if (this.head.direction === 'down') {
 			this.head.y2 += this.speed;
 		}
+	}
 
+	private moveTail() {
 		if (this.tail.direction === 'right') {
 			if (
 				this.tail.x1 + this.thickness === this.tail.x2 ||
 				this.tail.x1 + this.thickness > this.tail.x2
-			) {
-				this.body.pop();
-				return;
-			}
+			)
+				if (this.head.direction !== this.body[1].direction) {
+					return this.body.pop();
+				}
 			this.tail.x1 += this.speed;
 		}
 
@@ -154,20 +155,25 @@ export default class Snake implements GamePiece {
 			if (
 				this.tail.x1 + this.thickness === this.tail.x2 ||
 				this.tail.x1 + this.thickness > this.tail.x2
-			) {
-				this.body.pop();
-				return;
-			}
+			)
+				if (this.head.direction !== this.body[1].direction) {
+					return this.body.pop();
+				}
 			this.tail.x2 -= this.speed;
 		}
 
 		if (this.tail.direction === 'up') {
+			if (this.tail.y2 === -1) {
+				return this.body.pop();
+			}
+
 			if (
 				this.tail.y1 + this.thickness === this.tail.y2 ||
 				this.tail.y1 + this.thickness > this.tail.y2
 			) {
-				this.body.pop();
-				return;
+				if (this.head.direction !== this.body[1].direction) {
+					return this.body.pop();
+				}
 			}
 			this.tail.y2 -= this.speed;
 		}
@@ -176,12 +182,60 @@ export default class Snake implements GamePiece {
 			if (
 				this.tail.y1 + this.thickness === this.tail.y2 ||
 				this.tail.y1 + this.thickness > this.tail.y2
-			) {
-				this.body.pop();
-				return;
-			}
+			)
+				if (this.head.direction !== this.body[1].direction) {
+					return this.body.pop();
+				}
 			this.tail.y1 += this.speed;
 		}
+	}
+
+	private moveThroughBoundary() {
+		if (this.position.length > 1 && this.head.direction === this.position[1].direction) return;
+
+		if (this.head.x1 === 0 && this.head.direction === 'left') {
+			this.head = {
+				x1: canvasBoundary.width - 1,
+				x2: canvasBoundary.width,
+				y1: this.head.y1,
+				y2: this.head.y2,
+				direction: this.head.direction
+			};
+		} else if (this.head.x2 === canvasBoundary.width && this.head.direction === 'right') {
+			this.head = {
+				x1: 0,
+				x2: 1,
+				y1: this.head.y1,
+				y2: this.head.y2,
+				direction: this.head.direction
+			};
+		} else if (this.head.y1 === 0 && this.head.direction === 'up') {
+			this.head = {
+				x1: this.head.x1,
+				x2: this.head.x2,
+				y1: canvasBoundary.height - 1,
+				y2: canvasBoundary.height,
+				direction: this.head.direction
+			};
+		} else if (this.head.y2 === canvasBoundary.height && this.head.direction === 'down') {
+			this.head = {
+				x1: this.head.x1,
+				x2: this.head.x2,
+				y1: 0,
+				y2: 1,
+				direction: this.head.direction
+			};
+		}
+	}
+
+	move() {
+		if (!this.drawn) {
+			return console.warn('Snake.move called before snake was drawn');
+		}
+
+		this.moveHead();
+		this.moveThroughBoundary();
+		this.moveTail();
 	}
 
 	changeDirection(direction: SnakePosition['direction']) {
