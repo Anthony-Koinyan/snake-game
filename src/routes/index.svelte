@@ -2,7 +2,7 @@
 	import NavLink from '$lib/NavLink.svelte';
 </script>
 
-<nav class="flex flex-col items-center justify-center gap-14 w-full h-full">
+<nav class="flex flex-col items-center justify-center gap-20 w-full h-screen m-auto">
 	<NavLink url="/play" description="Continue" />
 	<NavLink url="/play" description="New Game" />
 	<NavLink url="/settings" description="Settings" />
