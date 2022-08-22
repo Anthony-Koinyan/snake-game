@@ -1,5 +1,10 @@
-import type { FoodPosition } from './types';
 import type { GamePiece } from '$lib/GamePiece';
+
+export interface FoodPosition {
+	x: number;
+	y: number;
+	// speial:boolean
+}
 
 export default class Food implements GamePiece {
 	private body: FoodPosition;

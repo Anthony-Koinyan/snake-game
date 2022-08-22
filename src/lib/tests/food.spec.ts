@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/svelte';
-import type { FoodPosition } from '$lib/food/types';
+import type { FoodPosition } from '$lib/food';
 import Food from '../food';
 import Canvas from '../canvas/Canvas.svelte';
 import { GAME_PIECE_MIN_SIZE } from '../stores';
