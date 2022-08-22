@@ -28,10 +28,7 @@ export const setCanvasSize = (containertWidth: number, containerHeight: number) 
 		(_data) =>
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			(_data = {
-				// TODO: remove width and heigth property if it is never used
 				scaleFactor: scale,
-				width: WIDTH * scale,
-				height: HEIGHT * scale,
 				canvasWidth: WIDTH * scale * pixelRatio,
 				canvasHeight: HEIGHT * scale * pixelRatio,
 				styleWidth: `${WIDTH * scale}px`,

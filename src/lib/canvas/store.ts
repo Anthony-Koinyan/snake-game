@@ -7,8 +7,6 @@ export const DEFAULT_CANVAS_HEIGHT = readable(400);
 
 export const canvasSize = writable<CanvasSize>({
 	scaleFactor: 1,
-	width: 1,
-	height: 1,
 	canvasWidth: 1,
 	canvasHeight: 1,
 	styleWidth: '1px',

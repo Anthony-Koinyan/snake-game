@@ -1,7 +1,5 @@
 export interface CanvasSize {
 	scaleFactor: number;
-	width: number;
-	height: number;
 	canvasWidth: number;
 	canvasHeight: number;
 	styleWidth: string;
