@@ -12,7 +12,6 @@ import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '$lib/canvas/store';
 import { get } from 'svelte/store';
 import type { GamePiece } from '../GamePiece';
 
-// TODO: MOVE THIS TO GLOBAL TYPES FOLDER
 export interface SnakePosition {
 	x1: number;
 	x2: number;
@@ -141,90 +140,92 @@ export default class Snake implements GamePiece {
 
 	private moveTail() {
 		if (this.tail.direction === 'right') {
-			if (
-				this.tail.x1 + this.thickness === this.tail.x2 ||
-				this.tail.x1 + this.thickness > this.tail.x2
-			)
-				if (this.head.direction !== this.body[1].direction) {
-					return this.body.pop();
-				}
+			if (this.tail.x1 >= canvasBoundary.width) {
+				return this.body.pop();
+			}
+
+			if (this.tail.x1 + this.thickness >= this.tail.x2 && this.tail.x2 !== canvasBoundary.width) {
+				return this.body.pop();
+			}
+
 			this.tail.x1 += this.speed;
 		}
 
 		if (this.tail.direction === 'left') {
-			if (
-				this.tail.x1 + this.thickness === this.tail.x2 ||
-				this.tail.x1 + this.thickness > this.tail.x2
-			)
-				if (this.head.direction !== this.body[1].direction) {
-					return this.body.pop();
-				}
+			if (this.tail.x2 <= 0) {
+				this.body.pop();
+			}
+
+			if (this.tail.x1 + this.thickness >= this.tail.x2 && this.tail.x1 !== 0) {
+				return this.body.pop();
+			}
+
 			this.tail.x2 -= this.speed;
 		}
 
 		if (this.tail.direction === 'up') {
-			if (this.tail.y2 === -1) {
+			if (this.tail.y2 <= 0) {
 				return this.body.pop();
 			}
 
-			if (
-				this.tail.y1 + this.thickness === this.tail.y2 ||
-				this.tail.y1 + this.thickness > this.tail.y2
-			) {
-				if (this.head.direction !== this.body[1].direction) {
-					return this.body.pop();
-				}
+			if (this.tail.y1 + this.thickness >= this.tail.y2 && this.tail.y1 !== 0) {
+				return this.body.pop();
 			}
+
 			this.tail.y2 -= this.speed;
 		}
 
 		if (this.tail.direction === 'down') {
-			if (
-				this.tail.y1 + this.thickness === this.tail.y2 ||
-				this.tail.y1 + this.thickness > this.tail.y2
-			)
-				if (this.head.direction !== this.body[1].direction) {
-					return this.body.pop();
-				}
+			if (this.tail.y1 >= canvasBoundary.height) {
+				return this.body.pop();
+			}
+
+			if (this.tail.y1 + this.thickness >= this.tail.y2 && this.tail.y2 !== canvasBoundary.height) {
+				return this.body.pop();
+			}
+
 			this.tail.y1 += this.speed;
 		}
 	}
 
 	private moveThroughBoundary() {
-		if (this.position.length > 1 && this.head.direction === this.position[1].direction) return;
-
-		if (this.head.x1 === 0 && this.head.direction === 'left') {
-			this.head = {
-				x1: canvasBoundary.width - 1,
-				x2: canvasBoundary.width,
-				y1: this.head.y1,
-				y2: this.head.y2,
-				direction: this.head.direction
-			};
-		} else if (this.head.x2 === canvasBoundary.width && this.head.direction === 'right') {
-			this.head = {
-				x1: 0,
-				x2: 1,
-				y1: this.head.y1,
-				y2: this.head.y2,
-				direction: this.head.direction
-			};
-		} else if (this.head.y1 === 0 && this.head.direction === 'up') {
-			this.head = {
-				x1: this.head.x1,
-				x2: this.head.x2,
-				y1: canvasBoundary.height - 1,
-				y2: canvasBoundary.height,
-				direction: this.head.direction
-			};
-		} else if (this.head.y2 === canvasBoundary.height && this.head.direction === 'down') {
-			this.head = {
-				x1: this.head.x1,
-				x2: this.head.x2,
-				y1: 0,
-				y2: 1,
-				direction: this.head.direction
-			};
+		if (
+			this.position.length < 2 ||
+			(this.position.length > 1 && this.head.direction !== this.position[1].direction)
+		) {
+			if (this.head.direction === 'left') {
+				this.head = {
+					x1: canvasBoundary.width - 1,
+					x2: canvasBoundary.width,
+					y1: this.head.y1,
+					y2: this.head.y2,
+					direction: this.head.direction
+				};
+			} else if (this.head.direction === 'right') {
+				this.head = {
+					x1: 0,
+					x2: 1,
+					y1: this.head.y1,
+					y2: this.head.y2,
+					direction: this.head.direction
+				};
+			} else if (this.head.direction === 'up') {
+				this.head = {
+					x1: this.head.x1,
+					x2: this.head.x2,
+					y1: canvasBoundary.height - 1,
+					y2: canvasBoundary.height,
+					direction: this.head.direction
+				};
+			} else if (this.head.direction === 'down') {
+				this.head = {
+					x1: this.head.x1,
+					x2: this.head.x2,
+					y1: 0,
+					y2: 1,
+					direction: this.head.direction
+				};
+			}
 		}
 	}
 
@@ -234,7 +235,16 @@ export default class Snake implements GamePiece {
 		}
 
 		this.moveHead();
-		this.moveThroughBoundary();
+
+		const isSnakeMovingThroughABoundary =
+			(this.body.length > 1 && this.head.direction === this.body[1].direction) ||
+			(this.head.x1 <= 0 && this.head.direction === 'left') ||
+			(this.head.x2 >= canvasBoundary.width && this.head.direction === 'right') ||
+			(this.head.y1 <= 0 && this.head.direction === 'up') ||
+			(this.head.y2 >= canvasBoundary.height && this.head.direction === 'down');
+
+		if (isSnakeMovingThroughABoundary) this.moveThroughBoundary();
+
 		this.moveTail();
 	}
 
