@@ -2,9 +2,12 @@
 	import NavLink from '$lib/NavLink.svelte';
 </script>
 
-<nav class="flex flex-col items-center justify-center gap-20 w-full h-screen m-auto">
-	<NavLink url="/play" description="Continue" />
-	<NavLink url="/play" description="New Game" />
-	<NavLink url="/settings" description="Settings" />
-	<NavLink url="https://github.com/Anthony-Koinyan/snake-game" description="Repo" />
-</nav>
+<div class="flex flex-col w-full h-[calc(100vh-2.5rem)]">
+	<nav class="grid gap-3 lg:gap-5 w-fit h-2/3 lg:h-3/4 align-baseline m-auto">
+		<NavLink url="/play">Continue</NavLink>
+		<NavLink url="/play">New Game</NavLink>
+		<NavLink url="/settings">Settings</NavLink>
+		<NavLink url="/high-scores">High Scores</NavLink>
+		<NavLink url="https://github.com/Anthony-Koinyan/snake-game" target="_blank">Repo</NavLink>
+	</nav>
+</div>
