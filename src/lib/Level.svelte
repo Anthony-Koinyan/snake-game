@@ -1,16 +1,13 @@
 <script lang="ts">
 	/**
 	 * TODO:
-	 * - Snake should be able to eat itself
 	 * - Draw obstacles if the level in level that have those
-	 * - If there are no obstacles and the snake goes through the bounds of the
-	 *   canvas it should come out the other side of the canvas
 	 */
 	import Snake from './snake/Snake.svelte';
 	import Food from './food/Food.svelte';
-	import { DIFFICULTY, GAME_PIECE_MIN_SIZE, SCOREBOARD } from './stores';
+	import { GAME_PIECE_MIN_SIZE, SCOREBOARD } from './stores';
 	import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from './canvas/store';
-	import { SNAKE_POSITION } from './snake/store';
+	import { SNAKE_POSITION, SNAKE_SPEED } from './snake/store';
 	import { FOOD_POSITION } from './food/store';
 
 	let eaten: boolean, stopSnake: boolean;
@@ -87,7 +84,7 @@
 				return position;
 			});
 
-			SCOREBOARD.update((score) => score + $DIFFICULTY.increment);
+			SCOREBOARD.update((score) => score + $SNAKE_SPEED);
 		}
 
 		for (const bodyPart of $SNAKE_POSITION) {
