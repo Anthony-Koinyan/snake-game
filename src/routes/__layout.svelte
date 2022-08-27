@@ -1,31 +1,23 @@
 <script lang="ts">
 	import '../app.css';
 	import { page } from '$app/stores';
-	import { afterNavigate } from '$app/navigation';
-	import { HAVE_ICONS_BEEN_LOADED } from '$lib/stores';
-
-	afterNavigate(() => {
-		if (!$HAVE_ICONS_BEEN_LOADED) {
-			const script = document.createElement('script');
-			script.setAttribute('type', 'module');
-			script.src = 'https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js';
-			document.body.appendChild(script);
-
-			$HAVE_ICONS_BEEN_LOADED = true;
-		}
-	});
 </script>
 
 {#if $page.url.pathname !== '/'}
 	<nav class="w-full p-5 border-y-black border-b-2 shadow-md">
 		<a
 			href="/"
-			class="flex text-3xl h-10 gap-4 ml-0 justify-start cursor-pointer w-fit hover:font-bold focus:font-bold focus:outline-none"
+			class="flex text-3xl h-10 gap-4 ml-0 justify-start cursor-pointer w-fit hover:font-bold focus:font-bold focus:outline-none hover:-translate-x-1 stroke-[2.5] hover:stroke-[3]"
 		>
-			<ion-icon
-				name="chevron-back-outline"
-				class="text-3xl m-auto hover:font-bold focus:font-bold"
-			/>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+				class="w-7 h-7 m-auto"
+			>
+				<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+			</svg>
 			<p class="my-auto">Go To Menu</p>
 		</a>
 	</nav>
