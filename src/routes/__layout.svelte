@@ -7,7 +7,7 @@
 	<nav class="w-full p-5 border-y-black border-b-2 shadow-md">
 		<a
 			href="/"
-			class="flex text-3xl h-10 gap-4 ml-0 justify-start cursor-pointer w-fit hover:font-bold focus:font-bold focus:outline-none hover:-translate-x-1 stroke-[2.5] hover:stroke-[3]"
+			class="flex text-3xl h-10 gap-4 ml-0 justify-start cursor-pointer w-fit hover:font-bold focus:font-bold focus:outline-none stroke-[2.5] hover:stroke-[3] focus:stroke-[3] active:-translate-x-4"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
