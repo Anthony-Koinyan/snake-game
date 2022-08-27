@@ -12,7 +12,7 @@
 	<h2 class="text-4xl mt-1 ml-2 font-medium">Set The Game Difficulty</h2>
 	<section class="grid gap-3 m-6 cursor-pointer">
 		{#each $DIFFICULTIES as difficulty}
-			<label class="text-2xl hover:font-semibold w-fit">
+			<label class="text-2xl hover:font-semibold">
 				<input
 					type="radio"
 					name="difficulty"
