@@ -1,6 +1,6 @@
 <script lang="ts">
 	// TODO: STYLE FALLBACK CONTENT!!!!
-	import { onMount, setContext, tick } from 'svelte';
+	import { onDestroy, onMount, setContext, tick } from 'svelte';
 	import { RENDER_CONTEXT_KEY } from '../stores';
 	import { canvasSize } from './store';
 	import { setCanvasSize, scaleCanvasDrawings } from './setCanvasSize';
@@ -102,8 +102,12 @@
 		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
 		runRenders();
 		runAnimations();
+	});
 
-		return pauseAnimation;
+	onDestroy(() => {
+		if (animationLoop) {
+			pauseAnimation();
+		}
 	});
 </script>
 
@@ -112,7 +116,7 @@
 	height={$canvasSize.canvasHeight}
 	style:width={$canvasSize.styleWidth}
 	style:height={$canvasSize.styleHeight}
-	class="border-2 border-solid border-black mx-auto"
+	class="border-2 border-solid border-black mx-auto shadow-md"
 	bind:this={canvas}
 	data-testid="canvas"
 >
