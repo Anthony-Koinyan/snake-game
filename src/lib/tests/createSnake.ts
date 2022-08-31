@@ -1,25 +1,94 @@
-import Snake from '$lib/snake';
-import type { SnakePosition } from '$lib/snake';
+import type { SnakePosition, SnakeDirection } from '$lib/snake/types';
 
-type direction = SnakePosition['direction'];
-
-export default (
-	headDirection: direction,
-	tailDirection: direction | null = null,
-	body: direction[] = []
+/**
+ * A utility function for making snake objects for testing
+ *
+ * @param headDirection - the direction of the snake's head
+ * @param options - adding data to create snake
+ * @param options.tailDirection - the direction of the snake's tail
+ * @param options.body - an array containing the directions of the rest of the snake's body continued from the snake's head
+ * @param options.length - the length of a given section of the snake
+ * @param options.thickness - the snakes thickness
+ * @param options.startPoint - an object representing the point on the canvas to start drawing the snake
+ * @param options.startPoint.x - the point on the x axis on the canvas to start drawing the snake
+ * @param options.startPoint.y - the point on the y axis on the canvas to start drawing the snake
+ *
+ * @returns an snake object with body directions corresponding to the input
+ */
+const createSnake = (
+	headDirection: SnakeDirection,
+	{
+		tailDirection = undefined,
+		body = [],
+		length = 50,
+		thickness = 15,
+		startPoint = { x: 0, y: 0 }
+	}: {
+		tailDirection?: SnakeDirection;
+		body?: SnakeDirection[];
+		length?: number;
+		thickness?: number;
+		startPoint?: {
+			x: number;
+			y: number;
+		};
+	} = {
+		tailDirection: undefined,
+		body: [],
+		length: 50,
+		thickness: 15,
+		startPoint: {
+			x: 0,
+			y: 0
+		}
+	}
 ) => {
-	const thickness = 15;
-	const length = 100;
-	const speed = 3;
-	const startPoint = { x: 190, y: 190 };
 	const snakeBody: SnakePosition[] = [];
 
-	const addToBody = (newDirection: direction, oldDirection: direction) => {
+	const addToBody = (newDirection: SnakeDirection, oldDirection?: SnakeDirection) => {
+		if (!oldDirection) {
+			if (newDirection === 'right') {
+				return snakeBody.push({
+					x1: startPoint.x,
+					x2: startPoint.x + length,
+					y1: startPoint.y,
+					y2: startPoint.y + thickness,
+					direction: newDirection
+				});
+			} else if (newDirection === 'left') {
+				return snakeBody.push({
+					x1: startPoint.x - length,
+					x2: startPoint.x,
+					y1: startPoint.y,
+					y2: startPoint.y + thickness,
+					direction: newDirection
+				});
+			} else if (newDirection === 'up') {
+				return snakeBody.push({
+					x1: startPoint.x,
+					x2: startPoint.x + thickness,
+					y1: startPoint.y - length,
+					y2: startPoint.y,
+					direction: 'up'
+				});
+			} else if (newDirection === 'down') {
+				return snakeBody.push({
+					x1: startPoint.x,
+					x2: startPoint.x + thickness,
+					y1: startPoint.y,
+					y2: startPoint.y + length,
+					direction: 'down'
+				});
+			}
+		}
+
 		if (newDirection === 'right') {
 			if (oldDirection === 'left' || oldDirection === 'right')
-				throw new Error("Tail direction cannot be 'RIGHT' if head direction is 'LEFT' or 'RIGHT'");
+				throw new Error(
+					"Next direction cannot be 'RIGHT' if previous direction is 'LEFT' or 'RIGHT'"
+				);
 
-			snakeBody.push({
+			snakeBody.unshift({
 				x1: snakeBody[0].x1,
 				x2: snakeBody[0].x2 + length,
 				y1: snakeBody[0].direction === 'up' ? snakeBody[0].y1 : snakeBody[0].y2 - thickness,
@@ -28,9 +97,11 @@ export default (
 			});
 		} else if (newDirection === 'left') {
 			if (oldDirection === 'left' || oldDirection === 'right')
-				throw new Error("Tail direction cannot be 'LEFT' if head direction is 'LEFT' or 'RIGHT'");
+				throw new Error(
+					"Next direction cannot be 'LEFT' if previous direction is 'LEFT' or 'RIGHT'"
+				);
 
-			snakeBody.push({
+			snakeBody.unshift({
 				x1: snakeBody[0].x1 - length,
 				x2: snakeBody[0].x2,
 				y1: snakeBody[0].direction === 'up' ? snakeBody[0].y1 : snakeBody[0].y2 - thickness,
@@ -39,9 +110,9 @@ export default (
 			});
 		} else if (newDirection === 'up') {
 			if (oldDirection === 'up' || oldDirection === 'down')
-				throw new Error("Tail direction cannot be 'UP' if head direction is 'UP' or 'DOWN'");
+				throw new Error("Next direction cannot be 'UP' if previous direction is 'UP' or 'DOWN'");
 
-			snakeBody.push({
+			snakeBody.unshift({
 				x1: snakeBody[0].direction === 'right' ? snakeBody[0].x2 - thickness : snakeBody[0].x1,
 				x2: snakeBody[0].direction === 'right' ? snakeBody[0].x2 : snakeBody[0].x1 + thickness,
 				y1: snakeBody[0].y1 - length,
@@ -52,7 +123,7 @@ export default (
 			if (oldDirection === 'up' || oldDirection === 'down')
 				throw new Error("Tail direction cannot be 'DOWN' if head direction is 'UP' or 'DOWN'");
 
-			snakeBody.push({
+			snakeBody.unshift({
 				x1: snakeBody[0].direction === 'right' ? snakeBody[0].x2 - thickness : snakeBody[0].x1,
 				x2: snakeBody[0].direction === 'right' ? snakeBody[0].x2 : snakeBody[0].x1 + thickness,
 				y1: snakeBody[0].y1,
@@ -62,39 +133,23 @@ export default (
 		}
 	};
 
-	if (headDirection === 'right' || headDirection === 'left') {
-		snakeBody.push({
-			x1: startPoint.x,
-			x2: startPoint.x + length,
-			y1: startPoint.y,
-			y2: startPoint.y + thickness,
-			direction: headDirection
-		});
-	} else {
-		snakeBody.push({
-			x1: startPoint.x,
-			x2: startPoint.x + thickness,
-			y1: startPoint.y,
-			y2: startPoint.y + length,
-			direction: headDirection
-		});
+	if (tailDirection) {
+		addToBody(tailDirection);
 	}
 
 	if (body.length > 0) {
-		body.forEach((direction, index) => {
-			addToBody(direction, body[index - 1] || headDirection);
-		});
+		for (let i = body.length - 1; i >= 0; i--) {
+			addToBody(body[i], body[i - 1] || headDirection);
+		}
 	}
 
-	if (tailDirection) {
-		addToBody(tailDirection, headDirection);
+	if (snakeBody.length) {
+		addToBody(headDirection, snakeBody[0].direction);
+	} else {
+		addToBody(headDirection);
 	}
 
-	return {
-		snake: new Snake(snakeBody, speed, thickness),
-		createdWith: snakeBody,
-		snakeSpeed: speed,
-		snakeThickness: thickness,
-		defaultLength: length
-	};
+	return snakeBody;
 };
+
+export default createSnake;
