@@ -1,19 +1,24 @@
 import '@testing-library/jest-dom';
-import { act, fireEvent, render, screen } from '@testing-library/svelte';
-import { get } from 'svelte/store';
-import Play from '../play/index.svelte';
-import { GAME_PIECE_MIN_SIZE, SCOREBOARD } from '$lib/stores';
-import { SNAKE_POSITION, SNAKE_SPEED } from '$lib/snake/store';
-import type { SnakePosition } from '$lib/snake';
+
 import { FOOD_POSITION } from '$lib/food/store';
+import { SNAKE_POSITION, SNAKE_SPEED } from '$lib/snake/store';
+import { GAME_PIECE_MIN_SIZE, SCOREBOARD } from '$lib/stores';
+import { get } from 'svelte/store';
+import { vi } from 'vitest';
+
+import { act, fireEvent, render, screen } from '@testing-library/svelte';
+
+import Play from '../play/index.svelte';
+
+import type { SnakePosition, SnakeDirection } from '$lib/snake/types';
 import type { FoodPosition } from '$lib/food';
 
 const getSnakeCurrentPosition = () => get(SNAKE_POSITION);
 const getFoodCurrentPosition = () => get(FOOD_POSITION);
 const advanceTimersByTime = async (time: number) => {
-	await act(() => jest.advanceTimersByTime(time));
+	await act(() => vi.advanceTimersByTime(time));
 };
-const changeSnakeDirection = (direction: SnakePosition['direction']) => {
+const changeSnakeDirection = (direction: SnakeDirection) => {
 	if (direction === 'right') {
 		fireEvent.keyPress(window, { key: 'D', code: 'KeyD' });
 	}
@@ -32,13 +37,13 @@ const changeSnakeDirection = (direction: SnakePosition['direction']) => {
 };
 
 beforeAll(() => {
-	jest.useFakeTimers();
-	jest.spyOn(window, 'requestAnimationFrame');
+	vi.useFakeTimers();
+	vi.spyOn(window, 'requestAnimationFrame');
 });
 
 afterAll(() => {
-	jest.runOnlyPendingTimers();
-	jest.useRealTimers();
+	vi.runOnlyPendingTimers();
+	vi.useRealTimers();
 });
 
 beforeEach(async () => {
@@ -192,6 +197,7 @@ describe('game updates properly when snake eats food', () => {
 		);
 	});
 
+	// TODO: this test expectation should be scoreboard + speed
 	it('updates the scoreboard', () => {
 		const speed = get(SNAKE_SPEED);
 		expect(scoreboard.textContent).toBe(`${speed}`);
