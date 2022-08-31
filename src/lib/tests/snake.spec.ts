@@ -1,338 +1,283 @@
-import { render, screen } from '@testing-library/svelte';
-import Snake from '../snake';
-import type { SnakePosition } from '../snake';
-import Canvas from '../canvas/Canvas.svelte';
+import '@testing-library/jest-dom';
+
+import { get } from 'svelte/store';
+import { vi } from 'vitest';
+
+import { act, fireEvent, render } from '@testing-library/svelte';
+
+import Game from '../../routes/play/index.svelte';
+import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '../canvas/store';
+import { SNAKE_POSITION } from '../snake/store';
+import { DIFFICULTY, DIFFICULTIES, GAME_PIECE_MIN_SIZE } from '../stores';
 import createSnake from './createSnake';
 
-describe('Instatiates the snake class properly', () => {
-	const position: SnakePosition = {
-		x1: 40,
-		x2: 190,
-		y1: 300,
-		y2: 315,
-		direction: 'right'
+import type { SnakePosition, SnakeDirection } from '$lib/snake/types';
+
+const difficulties = get(DIFFICULTIES);
+type Difficulty = typeof difficulties[number];
+
+const getSnakePosition = () => JSON.parse(JSON.stringify(get(SNAKE_POSITION))) as SnakePosition[];
+const setSnakePosition = (newPosition: SnakePosition[]) => SNAKE_POSITION.set(newPosition);
+const getGameDifficulty = () => get(DIFFICULTY);
+const setGameDifficulty = (difficulty: Difficulty) => DIFFICULTY.set(difficulty);
+const getGamePieceSize = () => get(GAME_PIECE_MIN_SIZE);
+const setGamePieceSize = (size: number) => GAME_PIECE_MIN_SIZE.set(size);
+const getCanvasBoundaryDimensions = () => {
+	return {
+		horizontal: get(DEFAULT_CANVAS_WIDTH),
+		vertical: get(DEFAULT_CANVAS_HEIGHT)
 	};
-
-	const match = {
-		body: [
-			{
-				x1: 40,
-				x2: 190,
-				y1: 300,
-				y2: 315,
-				direction: 'right'
-			}
-		]
-	};
-
-	it('can be instantiated with a position object', () => {
-		const snake = new Snake(position, 1, 15);
-		expect(snake).toMatchObject(match);
-	});
-
-	it('can be instantiated with an array of positions', () => {
-		const snake = new Snake([position], 1, 15);
-		expect(snake).toMatchObject(match);
-	});
-});
-
-let ctx: CanvasRenderingContext2D;
-
-beforeEach(() => {
-	render(Canvas);
-	const container = document.createElement('section');
-	container.style.width = '600px';
-	container.style.height = '400px';
-	const canvas: HTMLCanvasElement = screen.getByTestId('canvas');
-	container.appendChild(canvas);
-	ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-});
-
-const moveSnakeBySteps = (snake: Snake, steps: number) => {
-	for (let step = 0; step < steps; step++) {
-		snake.move();
-	}
 };
 
-describe('renders snake and clears snake properly', () => {
-	it('draws a rectangle for all positions in the body', () => {
-		const { snake, createdWith } = createSnake('right');
-		snake.draw(ctx);
-		expect(ctx.fillRect).toBeCalledTimes(1);
-		expect(ctx.fillRect).toBeCalledWith(
-			createdWith[0].x1,
-			createdWith[0].y1,
-			createdWith[0].x2 - createdWith[0].x1,
-			createdWith[0].y2 - createdWith[0].y1
+beforeAll(() => {
+	vi.useFakeTimers();
+});
+
+afterAll(() => {
+	vi.runOnlyPendingTimers();
+	vi.useRealTimers();
+});
+
+let initialSnakePosition: SnakePosition[];
+let initialGameDifficulty: Difficulty;
+let initialGamePieceSize: number;
+
+beforeEach(() => {
+	initialSnakePosition = getSnakePosition();
+	initialGameDifficulty = getGameDifficulty();
+	initialGamePieceSize = getGamePieceSize();
+});
+
+afterEach(() => {
+	setSnakePosition(initialSnakePosition);
+	setGameDifficulty(initialGameDifficulty);
+	setGamePieceSize(initialGamePieceSize);
+});
+
+describe('the snake can move in different shapes', async () => {
+	test.each([
+		['right', [{ x1: 51, x2: 71, y1: 50, y2: 70, direction: 'right' }]],
+		['left', [{ x1: 29, x2: 49, y1: 50, y2: 70, direction: 'left' }]],
+		['up', [{ x1: 50, x2: 70, y1: 29, y2: 49, direction: 'up' }]],
+		['down', [{ x1: 50, x2: 70, y1: 51, y2: 71, direction: 'down' }]]
+	])(
+		"when the snake is straight and it's direction is '%s' its body is '%o' after it moves",
+		async (direction: string, position: object) => {
+			setSnakePosition(
+				createSnake(direction as SnakeDirection, {
+					length: 20,
+					thickness: 20,
+					startPoint: { x: 50, y: 50 }
+				})
+			);
+			setGamePieceSize(20);
+			render(Game);
+			await act();
+			await act();
+
+			expect(getSnakePosition()).toEqual(position);
+		}
+	);
+
+	test.each([
+		[
+			'right',
+			'up',
+			[],
+			[
+				{ x1: 200, x2: 251, y1: 160, y2: 170, direction: 'right' },
+				{ x1: 200, x2: 210, y1: 160, y2: 199, direction: 'up' }
+			]
+		],
+		[
+			'up',
+			'left',
+			['left', 'up', 'right', 'up', 'right', 'down', 'right', 'down'],
+			[
+				{ x1: 240, x2: 250, y1: 159, y2: 210, direction: 'up' },
+				{ x1: 240, x2: 290, y1: 200, y2: 210, direction: 'left' },
+				{ x1: 280, x2: 290, y1: 200, y2: 250, direction: 'up' },
+				{ x1: 240, x2: 290, y1: 240, y2: 250, direction: 'right' },
+				{ x1: 240, x2: 250, y1: 240, y2: 290, direction: 'up' },
+				{ x1: 200, x2: 250, y1: 280, y2: 290, direction: 'right' },
+				{ x1: 200, x2: 210, y1: 240, y2: 290, direction: 'down' },
+				{ x1: 160, x2: 210, y1: 240, y2: 250, direction: 'right' },
+				{ x1: 160, x2: 170, y1: 200, y2: 250, direction: 'down' },
+				{ x1: 160, x2: 199, y1: 200, y2: 210, direction: 'left' }
+			]
+		]
+	])(
+		`the snake can move in different shapes; 
+		when it's head and tail directions are %s and %s and it's body directions are %o, it's positions are %o`,
+		async (headDirection, tailDirection, bodyDirections, expectedPosition) => {
+			setSnakePosition(
+				createSnake(headDirection as SnakeDirection, {
+					body: bodyDirections as SnakeDirection[],
+					tailDirection: tailDirection as SnakeDirection,
+					length: 40,
+					thickness: 10,
+					startPoint: { x: 200, y: 200 }
+				})
+			);
+
+			setGamePieceSize(10);
+
+			render(Game);
+			await act();
+			await act();
+
+			expect(getSnakePosition()).toEqual(expectedPosition);
+		}
+	);
+
+	test.each([
+		['Baby Steps', 1, [{ x1: 51, x2: 71, y1: 50, y2: 70, direction: 'right' }]],
+		['Nightmare', 5, [{ x1: 55, x2: 75, y1: 50, y2: 70, direction: 'right' }]],
+		['Cry To Your Mommy', 8, [{ x1: 58, x2: 78, y1: 50, y2: 70, direction: 'right' }]]
+	])(
+		'the snake speed depends on the difficulty; when the difficulty is "%s" the speed is "%i" and the snake position is %o after moving',
+
+		async (difficulty, speed, expectedPosition) => {
+			setGameDifficulty(difficulty as Difficulty);
+			const initialSnakePosition = createSnake('right', {
+				length: 20,
+				thickness: 20,
+				startPoint: { x: 50, y: 50 }
+			});
+
+			setGamePieceSize(20);
+
+			setSnakePosition(initialSnakePosition);
+			render(Game);
+			await act();
+			await act();
+
+			const currentSnakePosition = getSnakePosition();
+
+			expect(currentSnakePosition[0].x1 - initialSnakePosition[0].x1).toBe(speed);
+			expect(currentSnakePosition).toEqual(expectedPosition);
+		}
+	);
+
+	test('the snake becomes straight after moving for sometime from starting shape any shape', async () => {
+		setSnakePosition(
+			createSnake('right', {
+				body: ['up'],
+				tailDirection: 'left',
+				length: 10,
+				thickness: 2,
+				startPoint: { x: 30, y: 30 }
+			})
 		);
+
+		setGamePieceSize(2);
+		setGameDifficulty('Baby Steps');
+
+		render(Game);
+		await act();
+		await act();
+
+		vi.advanceTimersByTime(399);
+
+		const snakePosition = getSnakePosition();
+		expect(snakePosition).toHaveLength(1);
+		expect(snakePosition[0]).toEqual({
+			x1: 27,
+			x2: 57,
+			y1: 20,
+			y2: 22,
+			direction: 'right'
+		});
 	});
 
-	it("draws rectangle for all position when snake body's length greater than 1", () => {
-		const { snake, createdWith } = createSnake('right', 'up');
-
-		snake.draw(ctx);
-		expect(ctx.fillRect).toBeCalledTimes(2);
-		expect(ctx.fillRect).toBeCalledWith(
-			createdWith[0].x1,
-			createdWith[0].y1,
-			createdWith[0].x2 - createdWith[0].x1,
-			createdWith[0].y2 - createdWith[0].y1
+	test('the snake can move through the canvas boundary', async () => {
+		const canvasBoundaryDimensions = getCanvasBoundaryDimensions();
+		setSnakePosition(
+			createSnake('right', {
+				length: 20,
+				thickness: 6,
+				startPoint: { x: canvasBoundaryDimensions.horizontal - 20, y: 50 }
+			})
 		);
-		expect(ctx.fillRect).toBeCalledWith(
-			createdWith[1].x1,
-			createdWith[1].y1,
-			createdWith[1].x2 - createdWith[1].x1,
-			createdWith[1].y2 - createdWith[1].y1
-		);
-	});
+		setGamePieceSize(6);
+		render(Game);
+		await act();
+		await act();
 
-	it('only clears snake if snake has been drawn', () => {
-		const { snake } = createSnake('right');
-		snake.clear(ctx);
-		expect(ctx.clearRect).not.toBeCalled();
-
-		snake.draw(ctx);
-		snake.clear(ctx);
-		expect(ctx.clearRect).toBeCalled();
-	});
-
-	it('clears snake properly when tail is going right', () => {
-		const { snake, snakeSpeed } = createSnake('right');
-		snake.draw(ctx);
-		snake.clear(ctx);
-
-		const { x1, x2, y1, y2 } = snake.tail;
-		expect(ctx.clearRect).toBeCalledWith(x1 - snakeSpeed - 1, y1 - 1, x2 - x1 + 2, y2 - y1 + 2);
-	});
-
-	it('clears snake properly when tail is going left', () => {
-		const { snake, snakeSpeed } = createSnake('left');
-		snake.draw(ctx);
-		snake.clear(ctx);
-
-		const { x1, x2, y1, y2 } = snake.tail;
-		expect(ctx.clearRect).toBeCalledWith(x1 - 1, y1 - 1, x2 - x1 + snakeSpeed + 2, y2 - y1 + 2);
-	});
-
-	it('clears snake properly when tail is going up', () => {
-		const { snake, snakeSpeed } = createSnake('up');
-		snake.draw(ctx);
-		snake.clear(ctx);
-
-		const { x1, x2, y1, y2 } = snake.tail;
-		expect(ctx.clearRect).toBeCalledWith(x1 - 1, y1 - 1, x2 - x1 + 2, y2 - y1 + snakeSpeed + 2);
-	});
-
-	it('clears snake properly when tail is going down', () => {
-		const { snake, snakeSpeed } = createSnake('down');
-		snake.draw(ctx);
-		snake.clear(ctx);
-
-		const { x1, x2, y1, y2 } = snake.tail;
-		expect(ctx.clearRect).toBeCalledWith(x1 - 1, y1 - snakeSpeed - 1, x2 - x1 + 2, y2 - y1 + 2);
-	});
-
-	it("clears rectangle for all position when snake body's length greater than 1", () => {
-		const { snake } = createSnake('right', 'down', ['up', 'left', 'up', 'right']);
-		snake.draw(ctx);
-		snake.clear(ctx);
-
-		expect(ctx.clearRect).toBeCalledTimes(6);
-
-		expect(ctx.clearRect).toBeCalledWith(
-			snake.position[0].x1 - 1,
-			snake.position[0].y1 - 1,
-			snake.position[0].x2 - snake.position[0].x1 + 2,
-			snake.position[0].y2 - snake.position[0].y1 + 2
-		);
-
-		expect(ctx.clearRect).toBeCalledWith(
-			snake.position[1].x1 - 1,
-			snake.position[1].y1 - 1,
-			snake.position[1].x2 - snake.position[1].x1 + 2,
-			snake.position[1].y2 - snake.position[1].y1 + 2
-		);
-
-		expect(ctx.clearRect).toBeCalledWith(
-			snake.position[2].x1 - 1,
-			snake.position[2].y1 - 1,
-			snake.position[2].x2 - snake.position[2].x1 + 2,
-			snake.position[2].y2 - snake.position[2].y1 + 2
-		);
-
-		expect(ctx.clearRect).toBeCalledWith(
-			snake.position[3].x1 - 1,
-			snake.position[3].y1 - 1,
-			snake.position[3].x2 - snake.position[3].x1 + 2,
-			snake.position[3].y2 - snake.position[3].y1 + 2
-		);
-
-		expect(ctx.clearRect).toBeCalledWith(
-			snake.position[4].x1 - 1,
-			snake.position[4].y1 - 1,
-			snake.position[4].x2 - snake.position[4].x1 + 2,
-			snake.position[4].y2 - snake.position[4].y1 + 2
-		);
+		const snakePosition = getSnakePosition();
+		expect(snakePosition).toHaveLength(2);
+		expect(snakePosition).toEqual([
+			{ x1: 0, x2: 1, y1: 50, y2: 56, direction: 'right' },
+			{
+				x1: canvasBoundaryDimensions.horizontal - 19,
+				x2: canvasBoundaryDimensions.horizontal,
+				y1: 50,
+				y2: 56,
+				direction: 'right'
+			}
+		]);
 	});
 });
 
-describe('the snake can move', () => {
-	it("doesn't move the snake if it has not been drawn", () => {
-		const { snake, createdWith } = createSnake('down', 'right');
-		snake.move();
-		expect(snake.head).toEqual(createdWith[0]);
-		expect(snake.tail).toEqual(createdWith[1]);
-	});
+describe('the snake can change directions', async () => {
+	test.each([
+		[
+			'right',
+			'up',
+			'ArrowUp',
+			[
+				{ x1: 79, x2: 91, y1: 50, y2: 62, direction: 'up' },
+				{ x1: 51, x2: 91, y1: 50, y2: 62, direction: 'right' }
+			]
+		],
+		[
+			'right',
+			'down',
+			'ArrowDown',
+			[
+				{ x1: 79, x2: 91, y1: 50, y2: 62, direction: 'down' },
+				{ x1: 51, x2: 91, y1: 50, y2: 62, direction: 'right' }
+			]
+		],
+		[
+			'up',
+			'right',
+			'ArrowRight',
+			[
+				{ x1: 50, x2: 62, y1: 9, y2: 21, direction: 'right' },
+				{ x1: 50, x2: 62, y1: 9, y2: 49, direction: 'up' }
+			]
+		],
 
-	it('moves forward when the head direction is right', () => {
-		const { snake, createdWith, snakeSpeed } = createSnake('right');
-		snake.draw(ctx);
-		snake.move();
-		expect(snake.head.x2).toBe(createdWith[0].x2 + snakeSpeed);
-	});
+		[
+			'up',
+			'left',
+			'ArrowLeft',
+			[
+				{ x1: 50, x2: 62, y1: 9, y2: 21, direction: 'left' },
+				{ x1: 50, x2: 62, y1: 9, y2: 49, direction: 'up' }
+			]
+		]
+	])(
+		'the snakes direction changes from %s to %s when %s key is pressed',
+		async (intialDirection, newDirection, keyPressed, expectedPosition) => {
+			setSnakePosition(
+				createSnake(intialDirection as SnakeDirection, {
+					length: 40,
+					thickness: 12,
+					startPoint: { x: 50, y: 50 }
+				})
+			);
 
-	it('moves forward when the head direction is left', () => {
-		const { snake, createdWith, snakeSpeed } = createSnake('left');
-		snake.draw(ctx);
-		snake.move();
-		expect(snake.head.x1).toBe(createdWith[0].x1 - snakeSpeed);
-	});
+			render(Game);
+			await act();
+			await act();
 
-	it('moves forward when the head direction is up', () => {
-		const { snake, createdWith, snakeSpeed } = createSnake('up');
-		snake.draw(ctx);
-		snake.move();
-		expect(snake.head.y1).toBe(createdWith[0].y1 - snakeSpeed);
-	});
-
-	it('moves forward when the head direction is down', () => {
-		const { snake, createdWith, snakeSpeed } = createSnake('down');
-		snake.draw(ctx);
-		snake.move();
-		expect(snake.head.y2).toBe(createdWith[0].y2 + snakeSpeed);
-	});
-
-	it('moves forward when the tail direction is right', () => {
-		const { snake, createdWith, snakeSpeed } = createSnake('up', 'right');
-		snake.draw(ctx);
-		snake.move();
-		expect(snake.tail.x1).toBe(createdWith[createdWith.length - 1].x1 + snakeSpeed);
-	});
-
-	it('moves forward when the tail direction is left', () => {
-		const { snake, createdWith, snakeSpeed } = createSnake('up', 'left');
-		snake.draw(ctx);
-		snake.move();
-		expect(snake.tail.x2).toBe(createdWith[createdWith.length - 1].x2 - snakeSpeed);
-	});
-
-	it('moves forward when the tail direction is up', () => {
-		const { snake, createdWith, snakeSpeed } = createSnake('right', 'up');
-		snake.draw(ctx);
-		snake.move();
-		expect(snake.tail.y2).toBe(createdWith[createdWith.length - 1].y2 - snakeSpeed);
-	});
-
-	it('moves forward when the tail direction is down', () => {
-		const { snake, createdWith, snakeSpeed } = createSnake('left', 'down');
-		snake.draw(ctx);
-		snake.move();
-		expect(snake.tail.y1).toBe(createdWith[createdWith.length - 1].y1 + snakeSpeed);
-	});
-
-	it('straightens the snake body eventually', () => {
-		const { snake } = createSnake('right', 'up');
-		snake.draw(ctx);
-		expect(snake.position.length).toBe(2);
-		moveSnakeBySteps(snake, 100);
-		expect(snake.position.length).toBe(1);
-	});
-});
-
-describe("the sanke's direction can be changed", () => {
-	it("doesn't change if it is already moving in that direction", () => {
-		const { snake, createdWith } = createSnake('right');
-		snake.draw(ctx);
-		snake.changeDirection('right');
-
-		expect(snake.head.x1).toBe(createdWith[0].x1);
-		expect(snake.head.x2).toBe(createdWith[0].x2);
-		expect(snake.head.y1).toBe(createdWith[0].y1);
-		expect(snake.head.y2).toBe(createdWith[0].y2);
-	});
-
-	it('can change the snakes direction', () => {
-		let previousSnakePosition;
-		const { snake, createdWith, snakeThickness } = createSnake('right');
-		snake.draw(ctx);
-		snake.changeDirection('up');
-
-		expect(snake.head.x1).toBe(createdWith[0].x2 - snakeThickness);
-		expect(snake.head.x2).toBe(createdWith[0].x2);
-		expect(snake.head.y1).toBe(createdWith[0].y1);
-		expect(snake.head.y2).toBe(createdWith[0].y2);
-
-		moveSnakeBySteps(snake, 60);
-		previousSnakePosition = snake.position;
-		snake.changeDirection('left');
-
-		expect(snake.head.x1).toBe(previousSnakePosition[0].x1);
-		expect(snake.head.x2).toBe(previousSnakePosition[0].x2);
-		expect(snake.head.y1).toBe(previousSnakePosition[0].y1);
-		expect(snake.head.y2).toBe(previousSnakePosition[0].y1 + snakeThickness);
-
-		moveSnakeBySteps(snake, 60);
-		previousSnakePosition = snake.position;
-		snake.changeDirection('down');
-
-		expect(snake.head.x1).toBe(previousSnakePosition[0].x1);
-		expect(snake.head.x2).toBe(previousSnakePosition[0].x1 + snakeThickness);
-		expect(snake.head.y1).toBe(previousSnakePosition[0].y1);
-		expect(snake.head.y2).toBe(previousSnakePosition[0].y2);
-
-		moveSnakeBySteps(snake, 60);
-		previousSnakePosition = snake.position;
-		snake.changeDirection('right');
-
-		expect(snake.head.x1).toBe(previousSnakePosition[0].x1);
-		expect(snake.head.x2).toBe(previousSnakePosition[0].x2);
-		expect(snake.head.y1).toBe(previousSnakePosition[0].y2 - snakeThickness);
-		expect(snake.head.y2).toBe(previousSnakePosition[0].y2);
-
-		moveSnakeBySteps(snake, 60);
-		previousSnakePosition = snake.position;
-		snake.changeDirection('down');
-
-		expect(snake.head.x1).toBe(previousSnakePosition[0].x2 - snakeThickness);
-		expect(snake.head.x2).toBe(previousSnakePosition[0].x2);
-		expect(snake.head.y1).toBe(previousSnakePosition[0].y1);
-		expect(snake.head.y2).toBe(previousSnakePosition[0].y2);
-
-		moveSnakeBySteps(snake, 60);
-		previousSnakePosition = snake.position;
-		snake.changeDirection('left');
-
-		expect(snake.head.x1).toBe(previousSnakePosition[0].x1);
-		expect(snake.head.x2).toBe(previousSnakePosition[0].x2);
-		expect(snake.head.y1).toBe(previousSnakePosition[0].y2 - snakeThickness);
-		expect(snake.head.y2).toBe(previousSnakePosition[0].y2);
-
-		moveSnakeBySteps(snake, 60);
-		previousSnakePosition = snake.position;
-		snake.changeDirection('up');
-
-		expect(snake.head.x1).toBe(previousSnakePosition[0].x1);
-		expect(snake.head.x2).toBe(previousSnakePosition[0].x1 + snakeThickness);
-		expect(snake.head.y1).toBe(previousSnakePosition[0].y1);
-		expect(snake.head.y2).toBe(previousSnakePosition[0].y2);
-
-		moveSnakeBySteps(snake, 60);
-		previousSnakePosition = snake.position;
-		snake.changeDirection('right');
-
-		expect(snake.head.x1).toBe(previousSnakePosition[0].x1);
-		expect(snake.head.x2).toBe(previousSnakePosition[0].x2);
-		expect(snake.head.y1).toBe(previousSnakePosition[0].y1);
-		expect(snake.head.y2).toBe(previousSnakePosition[0].y1 + snakeThickness);
-	});
+			fireEvent.keyUp(window, { key: keyPressed, code: keyPressed });
+			const snakePosition = getSnakePosition();
+			expect(snakePosition).toHaveLength(2);
+			expect(snakePosition[0].direction).toBe(newDirection);
+			expect(snakePosition).toEqual(expectedPosition);
+		}
+	);
 });
