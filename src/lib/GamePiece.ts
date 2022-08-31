@@ -1,4 +1,4 @@
-import type { SnakePosition } from './snake';
+import type { SnakePosition } from './snake/types';
 import type { FoodPosition } from './food';
 
 export interface GamePiece {
