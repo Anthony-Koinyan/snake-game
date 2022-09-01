@@ -3,12 +3,13 @@ import '@testing-library/jest-dom';
 import { get } from 'svelte/store';
 import { vi } from 'vitest';
 
-import { act, fireEvent, render } from '@testing-library/svelte';
+import { act, render } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
 
 import Game from '../../routes/play/index.svelte';
 import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '../canvas/store';
 import { SNAKE_POSITION } from '../snake/store';
-import { DIFFICULTY, DIFFICULTIES, GAME_PIECE_MIN_SIZE } from '../stores';
+import { DIFFICULTIES, DIFFICULTY, GAME_PIECE_MIN_SIZE } from '../stores';
 import createSnake from './createSnake';
 
 import type { SnakePosition, SnakeDirection } from '$lib/snake/types';
@@ -22,6 +23,11 @@ const getGameDifficulty = () => get(DIFFICULTY);
 const setGameDifficulty = (difficulty: Difficulty) => DIFFICULTY.set(difficulty);
 const getGamePieceSize = () => get(GAME_PIECE_MIN_SIZE);
 const setGamePieceSize = (size: number) => GAME_PIECE_MIN_SIZE.set(size);
+
+const moveSnakeBySteps = async (steps: number) => {
+	await act(() => vi.advanceTimersByTime(steps * 16));
+};
+
 const getCanvasBoundaryDimensions = () => {
 	return {
 		horizontal: get(DEFAULT_CANVAS_WIDTH),
@@ -177,7 +183,7 @@ describe('the snake can move in different shapes', async () => {
 		await act();
 		await act();
 
-		vi.advanceTimersByTime(399);
+		await moveSnakeBySteps(24);
 
 		const snakePosition = getSnakePosition();
 		expect(snakePosition).toHaveLength(1);
@@ -224,7 +230,6 @@ describe('the snake can change directions', async () => {
 		[
 			'right',
 			'up',
-			'ArrowUp',
 			[
 				{ x1: 79, x2: 91, y1: 50, y2: 62, direction: 'up' },
 				{ x1: 51, x2: 91, y1: 50, y2: 62, direction: 'right' }
@@ -233,7 +238,6 @@ describe('the snake can change directions', async () => {
 		[
 			'right',
 			'down',
-			'ArrowDown',
 			[
 				{ x1: 79, x2: 91, y1: 50, y2: 62, direction: 'down' },
 				{ x1: 51, x2: 91, y1: 50, y2: 62, direction: 'right' }
@@ -242,7 +246,6 @@ describe('the snake can change directions', async () => {
 		[
 			'up',
 			'right',
-			'ArrowRight',
 			[
 				{ x1: 50, x2: 62, y1: 9, y2: 21, direction: 'right' },
 				{ x1: 50, x2: 62, y1: 9, y2: 49, direction: 'up' }
@@ -252,7 +255,6 @@ describe('the snake can change directions', async () => {
 		[
 			'up',
 			'left',
-			'ArrowLeft',
 			[
 				{ x1: 50, x2: 62, y1: 9, y2: 21, direction: 'left' },
 				{ x1: 50, x2: 62, y1: 9, y2: 49, direction: 'up' }
@@ -260,7 +262,13 @@ describe('the snake can change directions', async () => {
 		]
 	])(
 		'the snakes direction changes from %s to %s when %s key is pressed',
-		async (intialDirection, newDirection, keyPressed, expectedPosition) => {
+		async (intialDirection, newDirection, expectedPosition) => {
+			const user = userEvent.setup({
+				advanceTimers(delay) {
+					vi.advanceTimersByTime(delay);
+				}
+			});
+
 			setSnakePosition(
 				createSnake(intialDirection as SnakeDirection, {
 					length: 40,
@@ -273,11 +281,54 @@ describe('the snake can change directions', async () => {
 			await act();
 			await act();
 
-			fireEvent.keyUp(window, { key: keyPressed, code: keyPressed });
+			await user.keyboard(
+				`{Arrow${newDirection.charAt(0).toUpperCase() + newDirection.substring(1)}}`
+			);
+
 			const snakePosition = getSnakePosition();
 			expect(snakePosition).toHaveLength(2);
 			expect(snakePosition[0].direction).toBe(newDirection);
 			expect(snakePosition).toEqual(expectedPosition);
 		}
 	);
+});
+
+describe('the game stops stops running', () => {
+	test('the game stops when the snake bites itself', async () => {
+		const user = userEvent.setup({
+			advanceTimers(delay) {
+				vi.advanceTimersByTime(delay);
+			}
+		});
+		setSnakePosition(
+			createSnake('right', {
+				length: 150,
+				thickness: 12,
+				startPoint: { x: 50, y: 50 }
+			})
+		);
+		setGamePieceSize(12);
+
+		render(Game);
+		await act();
+		await act();
+
+		await user.keyboard('[ArrowUp]');
+		await moveSnakeBySteps(13);
+
+		await user.keyboard('[ArrowLeft]');
+		await moveSnakeBySteps(13);
+
+		await user.keyboard('[ArrowDown]');
+		await moveSnakeBySteps(2);
+
+		let snakePosition = getSnakePosition();
+		let head = snakePosition[0];
+		expect(head.y2 - head.y1).toBe(13);
+
+		await moveSnakeBySteps(12);
+		snakePosition = getSnakePosition();
+		head = snakePosition[0];
+		expect(head.y2 - head.y1).toBe(13);
+	});
 });
