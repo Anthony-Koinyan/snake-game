@@ -6,11 +6,11 @@ import { GAME_PIECE_MIN_SIZE, SCOREBOARD } from '$lib/stores';
 import { get } from 'svelte/store';
 import { vi } from 'vitest';
 
-import { act, fireEvent, render, screen } from '@testing-library/svelte';
+import { act, render, screen } from '@testing-library/svelte';
 
 import Play from '../play/index.svelte';
 
-import type { SnakePosition, SnakeDirection } from '$lib/snake/types';
+import type { SnakePosition } from '$lib/snake/types';
 import type { FoodPosition } from '$lib/food';
 
 const getSnakeCurrentPosition = () => get(SNAKE_POSITION);
@@ -83,62 +83,6 @@ describe('checking for default content on initial render', () => {
 	it('has the scoreboard', () => {
 		expect(screen.getByText(0)).toBeInTheDocument();
 	});
-});
-
-describe('snake can move', () => {
-	it('moves the snake', async () => {
-		const snakePosition = getSnakeCurrentPosition();
-		await advanceTimersByTime(16); // 1 animation frame
-		expect(getSnakeCurrentPosition()).not.toEqual(snakePosition);
-	});
-
-	it('has a speed equal to SNAKE_SPEED store', async () => {
-		const speed = get(SNAKE_SPEED);
-		const previousSnakePosition = getSnakeCurrentPosition();
-
-		await advanceTimersByTime(16); // 1 animation frame
-		const currentSnakePosition = getSnakeCurrentPosition();
-		expect(currentSnakePosition[0].x2 - previousSnakePosition[0].x2).toBe(speed);
-	});
-
-	// TODO: make this work
-	// it('can change snake direction with "WASD" keys', async () => {
-	// 	expect(getSnakeCurrentPosition().length).toBe(1);
-	// 	expect(getSnakeCurrentPosition()[0].direction).toBe('right');
-
-	// 	changeSnakeDirection('up');
-	// 	await advanceTimersByTime(100); // 6 animation frames (16ms per frame)
-	// 	expect(getSnakeCurrentPosition().length).toBe(2);
-	// 	expect(getSnakeCurrentPosition()[0].direction).toBe('up');
-
-	// 	changeSnakeDirection('right');
-	// 	await advanceTimersByTime(100); // 6 animation frames (16ms per frame)
-	// 	expect(getSnakeCurrentPosition().length).toBe(3);
-	// 	expect(getSnakeCurrentPosition()[0].direction).toBe('right');
-
-	// 	changeSnakeDirection('down');
-	// 	await advanceTimersByTime(100); // 6 animation frames (16ms per frame)
-	// 	expect(getSnakeCurrentPosition().length).toBe(4);
-	// 	expect(getSnakeCurrentPosition()[0].direction).toBe('down');
-
-	// 	changeSnakeDirection('left');
-	// 	await advanceTimersByTime(100); // 6 animation frames (16ms per frame)
-	// 	expect(getSnakeCurrentPosition().length).toBe(5);
-	// 	expect(getSnakeCurrentPosition()[0].direction).toBe('left');
-	// });
-
-	// TODO: write a test to check that the sanke can eat itself
-
-	// it("doesn't move when it hits itself", async () => {
-	// 	fireEvent.keyPress(window, { key: 'W', code: 'KeyW' }); // MOVE SNAKE UP
-	// 	await advanceTimersByTime(100); // 6 steps (16ms per frame, 1 frame per step)
-	// 	fireEvent.keyPress(window, { key: 'A', code: 'KeyA' }); // MOVE SNAKE LEFT
-	// 	await advanceTimersByTime(100); // 6 steps (16ms per frame, 1 frame per step)
-	// 	fireEvent.keyPress(window, { key: 'S', code: 'KeyS' }); // MOVE SNAKE DOWN
-	// 	await advanceTimersByTime(100); // 6 steps (16ms per frame, 1 frame per step)
-	// 	const snakePosition = getSnakeCurrentPosition();
-	// 	expect(snakePosition[0].y2 - snakePosition[0].y1).toBe(6);
-	// });
 });
 
 describe('game updates properly when snake eats food', () => {
