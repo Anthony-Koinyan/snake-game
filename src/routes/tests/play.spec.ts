@@ -18,23 +18,6 @@ const getFoodCurrentPosition = () => get(FOOD_POSITION);
 const advanceTimersByTime = async (time: number) => {
 	await act(() => vi.advanceTimersByTime(time));
 };
-const changeSnakeDirection = (direction: SnakeDirection) => {
-	if (direction === 'right') {
-		fireEvent.keyPress(window, { key: 'D', code: 'KeyD' });
-	}
-
-	if (direction === 'left') {
-		fireEvent.keyPress(window, { key: 'A', code: 'KeyA' });
-	}
-
-	if (direction === 'up') {
-		fireEvent.keyPress(window, { key: 'W', code: 'KeyW' });
-	}
-
-	if (direction === 'down') {
-		fireEvent.keyPress(window, { key: 'S', code: 'KeyS' });
-	}
-};
 
 beforeAll(() => {
 	vi.useFakeTimers();
@@ -71,7 +54,6 @@ afterEach(() => {
 });
 
 describe('checking for default content on initial render', () => {
-	const [snakePosition] = get(SNAKE_POSITION);
 	let ctx: CanvasRenderingContext2D | null;
 
 	beforeEach(async () => {
@@ -80,6 +62,8 @@ describe('checking for default content on initial render', () => {
 	});
 
 	it('draws the snake', () => {
+		const [snakePosition] = get(SNAKE_POSITION);
+
 		expect(ctx?.fillRect).toBeCalledWith(
 			snakePosition.x1,
 			snakePosition.y1,
