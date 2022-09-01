@@ -10,7 +10,7 @@
 	import { SNAKE_POSITION, SNAKE_SPEED } from './snake/store';
 	import { FOOD_POSITION } from './food/store';
 
-	let eaten: boolean, stopSnake: boolean;
+	let eaten: boolean;
 
 	$: snakeHead = $SNAKE_POSITION[0];
 
@@ -86,48 +86,8 @@
 
 			SCOREBOARD.update((score) => score + $SNAKE_SPEED);
 		}
-
-		for (const bodyPart of $SNAKE_POSITION) {
-			if ($SNAKE_POSITION.indexOf(bodyPart) === 0) continue;
-
-			if (
-				snakeHead.direction === 'up' &&
-				(bodyPart.direction === 'left' || bodyPart.direction === 'right') &&
-				snakeHead.y1 === bodyPart.y2 &&
-				snakeHead.x1 <= bodyPart.x2 &&
-				snakeHead.x1 >= bodyPart.x1
-			)
-				stopSnake = true;
-
-			if (
-				snakeHead.direction === 'down' &&
-				(bodyPart.direction === 'left' || bodyPart.direction === 'right') &&
-				snakeHead.y2 === bodyPart.y1 &&
-				snakeHead.x2 <= bodyPart.x2 &&
-				snakeHead.x1 >= bodyPart.x1
-			)
-				stopSnake = true;
-
-			if (
-				snakeHead.direction === 'right' &&
-				(bodyPart.direction === 'down' || bodyPart.direction === 'up') &&
-				snakeHead.x2 === bodyPart.x1 &&
-				snakeHead.y1 >= bodyPart.y1 &&
-				snakeHead.y2 <= bodyPart.y2
-			)
-				stopSnake = true;
-
-			if (
-				snakeHead.direction === 'left' &&
-				(bodyPart.direction === 'down' || bodyPart.direction === 'up') &&
-				snakeHead.x1 === bodyPart.x2 &&
-				snakeHead.y1 >= bodyPart.y1 &&
-				snakeHead.y2 <= bodyPart.y2
-			)
-				stopSnake = true;
-		}
 	}
 </script>
 
-<Snake deleteAnimation={stopSnake} />
+<Snake />
 <Food redraw={eaten} />
