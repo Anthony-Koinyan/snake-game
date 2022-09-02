@@ -1,9 +1,5 @@
 import '@testing-library/jest-dom';
 
-import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '$lib/canvas/store';
-import { SNAKE_POSITION } from '$lib/snake/store';
-import { DIFFICULTIES, DIFFICULTY, GAME_PIECE_MIN_SIZE } from '$lib/stores';
-import { get } from 'svelte/store';
 import { vi } from 'vitest';
 
 import { act, render } from '@testing-library/svelte';
@@ -11,29 +7,19 @@ import userEvent from '@testing-library/user-event';
 
 import Game from '../routes/play/index.svelte';
 import createSnake from './utils/createSnake';
+import moveSnakeBySteps from './utils/moveSnakeBySteps';
+import {
+	getCanvasBoundaryDimensions,
+	getGameDifficulty,
+	getGamePieceSize,
+	getSnakePosition,
+	setGameDifficulty,
+	setGamePieceSize,
+	setSnakePosition
+} from './utils/storeIO';
 
+import type { Difficulty } from './utils/storeIO';
 import type { SnakePosition, SnakeDirection } from '$lib/snake/types';
-
-const difficulties = get(DIFFICULTIES);
-type Difficulty = typeof difficulties[number];
-
-const getSnakePosition = () => JSON.parse(JSON.stringify(get(SNAKE_POSITION))) as SnakePosition[];
-const setSnakePosition = (newPosition: SnakePosition[]) => SNAKE_POSITION.set(newPosition);
-const getGameDifficulty = () => get(DIFFICULTY);
-const setGameDifficulty = (difficulty: Difficulty) => DIFFICULTY.set(difficulty);
-const getGamePieceSize = () => get(GAME_PIECE_MIN_SIZE);
-const setGamePieceSize = (size: number) => GAME_PIECE_MIN_SIZE.set(size);
-
-const moveSnakeBySteps = (steps: number) => {
-	vi.advanceTimersByTime(steps * 16);
-};
-
-const getCanvasBoundaryDimensions = () => {
-	return {
-		horizontal: get(DEFAULT_CANVAS_WIDTH),
-		vertical: get(DEFAULT_CANVAS_HEIGHT)
-	};
-};
 
 beforeAll(() => {
 	vi.useFakeTimers();
