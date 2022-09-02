@@ -51,8 +51,9 @@
 	const runRenders = () => {
 		if (renders.size > 0) {
 			renders.forEach((fn) => {
-				if (!fn) throw new Error('Render function must not be null');
-				if (typeof fn !== 'function') throw new Error('Render function must be function');
+				if (typeof fn !== 'function') {
+					throw new Error('INVALID INPUT!!!\nRender function must be FUNCTION!!!');
+				}
 				fn(ctx);
 			});
 		}
@@ -64,14 +65,8 @@
 		}
 
 		animations.forEach((fn) => {
-			if (!fn) {
-				pauseAnimation();
-				throw new Error('Animation function must not be null');
-			}
-
 			if (typeof fn !== 'function') {
-				pauseAnimation();
-				throw new Error('Animation function must be function');
+				throw new Error('INVALID INPUT!!!Animation function must be FUNCTION!!!');
 			}
 
 			fn(ctx);
