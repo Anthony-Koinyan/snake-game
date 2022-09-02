@@ -35,8 +35,6 @@ beforeEach(async () => {
 	});
 
 	render(Play);
-	await act();
-	await act();
 });
 
 afterEach(() => {

@@ -60,7 +60,7 @@ afterEach(() => {
 	setGamePieceSize(initialGamePieceSize);
 });
 
-describe('the snake can move in different shapes', async () => {
+describe('the snake can move in different shapes', () => {
 	test.each([
 		['right', [{ x1: 51, x2: 71, y1: 50, y2: 70, direction: 'right' }]],
 		['left', [{ x1: 29, x2: 49, y1: 50, y2: 70, direction: 'left' }]],
@@ -68,7 +68,7 @@ describe('the snake can move in different shapes', async () => {
 		['down', [{ x1: 50, x2: 70, y1: 51, y2: 71, direction: 'down' }]]
 	])(
 		"when the snake is straight and it's direction is '%s' its body is '%o' after it moves",
-		async (direction: string, position: object) => {
+		(direction: string, position: object) => {
 			setSnakePosition(
 				createSnake(direction as SnakeDirection, {
 					length: 20,
@@ -78,9 +78,6 @@ describe('the snake can move in different shapes', async () => {
 			);
 			setGamePieceSize(20);
 			render(Game);
-			await act();
-			await act();
-
 			expect(getSnakePosition()).toEqual(position);
 		}
 	);
@@ -115,7 +112,7 @@ describe('the snake can move in different shapes', async () => {
 	])(
 		`the snake can move in different shapes; 
 		when it's head and tail directions are %s and %s and it's body directions are %o, it's positions are %o`,
-		async (headDirection, tailDirection, bodyDirections, expectedPosition) => {
+		(headDirection, tailDirection, bodyDirections, expectedPosition) => {
 			setSnakePosition(
 				createSnake(headDirection as SnakeDirection, {
 					body: bodyDirections as SnakeDirection[],
@@ -125,13 +122,8 @@ describe('the snake can move in different shapes', async () => {
 					startPoint: { x: 200, y: 200 }
 				})
 			);
-
 			setGamePieceSize(10);
-
 			render(Game);
-			await act();
-			await act();
-
 			expect(getSnakePosition()).toEqual(expectedPosition);
 		}
 	);
@@ -143,7 +135,7 @@ describe('the snake can move in different shapes', async () => {
 	])(
 		'the snake speed depends on the difficulty; when the difficulty is "%s" the speed is "%i" and the snake position is %o after moving',
 
-		async (difficulty, speed, expectedPosition) => {
+		(difficulty, speed, expectedPosition) => {
 			setGameDifficulty(difficulty as Difficulty);
 			const initialSnakePosition = createSnake('right', {
 				length: 20,
@@ -152,14 +144,10 @@ describe('the snake can move in different shapes', async () => {
 			});
 
 			setGamePieceSize(20);
-
 			setSnakePosition(initialSnakePosition);
 			render(Game);
-			await act();
-			await act();
 
 			const currentSnakePosition = getSnakePosition();
-
 			expect(currentSnakePosition[0].x1 - initialSnakePosition[0].x1).toBe(speed);
 			expect(currentSnakePosition).toEqual(expectedPosition);
 		}
@@ -178,11 +166,7 @@ describe('the snake can move in different shapes', async () => {
 
 		setGamePieceSize(2);
 		setGameDifficulty('Baby Steps');
-
 		render(Game);
-		await act();
-		await act();
-
 		await moveSnakeBySteps(24);
 
 		const snakePosition = getSnakePosition();
@@ -196,7 +180,7 @@ describe('the snake can move in different shapes', async () => {
 		});
 	});
 
-	test('the snake can move through the canvas boundary', async () => {
+	test('the snake can move through the canvas boundary', () => {
 		const canvasBoundaryDimensions = getCanvasBoundaryDimensions();
 		setSnakePosition(
 			createSnake('right', {
@@ -207,8 +191,6 @@ describe('the snake can move in different shapes', async () => {
 		);
 		setGamePieceSize(6);
 		render(Game);
-		await act();
-		await act();
 
 		const snakePosition = getSnakePosition();
 		expect(snakePosition).toHaveLength(2);
@@ -225,7 +207,7 @@ describe('the snake can move in different shapes', async () => {
 	});
 });
 
-describe('the snake can change directions', async () => {
+describe('the snake can change directions', () => {
 	test.each([
 		[
 			'right',
@@ -278,8 +260,6 @@ describe('the snake can change directions', async () => {
 			);
 
 			render(Game);
-			await act();
-			await act();
 
 			await user.keyboard(
 				`{Arrow${newDirection.charAt(0).toUpperCase() + newDirection.substring(1)}}`
@@ -310,8 +290,6 @@ describe('the game stops stops running', () => {
 		setGamePieceSize(12);
 
 		render(Game);
-		await act();
-		await act();
 
 		await user.keyboard('[ArrowUp]');
 		await moveSnakeBySteps(13);
