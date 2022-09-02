@@ -11,7 +11,6 @@
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
 	let animation: number;
-	let isAnimationRunning = false;
 
 	let canvasDimensions = {
 		canvasWidth: 1,
@@ -60,8 +59,6 @@
 	};
 
 	const runAnimations = () => {
-		isAnimationRunning = true;
-
 		if (animations.size === 0) {
 			return pauseAnimation();
 		}
@@ -85,7 +82,7 @@
 
 	const pauseAnimation = () => {
 		cancelAnimationFrame(animation);
-		isAnimationRunning = false;
+		animation = 0;
 	};
 
 	const getParentDimensions = () => {
@@ -128,7 +125,7 @@
 <svelte:window
 	on:resize|passive={() => {
 		// FIXME: Don't move an animation frame on resize just draw
-		const wasAnimationRunningBeforeResize = isAnimationRunning;
+		const wasAnimationRunningBeforeResize = !!animation;
 		pauseAnimation();
 
 		const { width: parentWidth, height: parentHeight } = getParentDimensions();
@@ -142,7 +139,7 @@
 	}}
 	on:keypress|preventDefault={(e) => {
 		if (e.code === 'Space') {
-			if (isAnimationRunning) pauseAnimation();
+			if (animation) pauseAnimation();
 			else runAnimations();
 		}
 	}}
