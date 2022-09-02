@@ -1,10 +1,12 @@
-import { render, screen } from '@testing-library/svelte';
-import type { FoodPosition } from '$lib/food';
-import Food from '../food';
-import Canvas from '../canvas/Canvas.svelte';
-import { GAME_PIECE_MIN_SIZE } from '../stores';
+import Canvas from '$lib/canvas/Canvas.svelte';
+import { GAME_PIECE_MIN_SIZE } from '$lib/stores';
 import { get } from 'svelte/store';
 
+import { render, screen } from '@testing-library/svelte';
+
+import Food from '../lib/food';
+
+import type { FoodPosition } from '$lib/food';
 const position: FoodPosition = {
 	x: 300,
 	y: 200

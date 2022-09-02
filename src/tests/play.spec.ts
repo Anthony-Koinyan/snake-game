@@ -8,7 +8,7 @@ import { vi } from 'vitest';
 
 import { act, render, screen } from '@testing-library/svelte';
 
-import Play from '../play/index.svelte';
+import Play from '../routes/play/index.svelte';
 
 import type { SnakePosition } from '$lib/snake/types';
 import type { FoodPosition } from '$lib/food';

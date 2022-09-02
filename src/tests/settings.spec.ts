@@ -1,8 +1,11 @@
 import '@testing-library/jest-dom';
-import { fireEvent, render, screen } from '@testing-library/svelte';
-import { get } from 'svelte/store';
+
 import { DIFFICULTY } from '$lib/stores';
-import Settings from '../settings/index.svelte';
+import { get } from 'svelte/store';
+
+import { fireEvent, render, screen } from '@testing-library/svelte';
+
+import Settings from '../routes/settings/index.svelte';
 
 describe('The difficulty can be changed', () => {
 	const getGameDifficulty = () => get(DIFFICULTY);

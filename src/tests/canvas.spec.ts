@@ -1,8 +1,8 @@
-import { render } from '@testing-library/svelte';
+import { act, render } from '@testing-library/svelte';
 
-import Canvas from '../canvas/Canvas.svelte';
+import Canvas from '$lib/canvas/Canvas.svelte';
 
-test('the canvas scales properly', () => {
+test('the canvas scales properly', async () => {
 	const target = document.createElement('div');
 
 	Object.defineProperty(target, 'clientWidth', {
@@ -31,6 +31,7 @@ test('the canvas scales properly', () => {
 
 	const { getByTestId } = render(Canvas, { target, props: initialCanvasDimensions });
 	const canvas = getByTestId('canvas') as HTMLCanvasElement;
+	await act();
 
 	expect(canvas.width).toBe(Math.floor(initialCanvasDimensions.width * scaleFactor * pixelRatio));
 	expect(canvas.height).toBe(Math.floor(initialCanvasDimensions.height * scaleFactor * pixelRatio));

@@ -1,16 +1,16 @@
 import '@testing-library/jest-dom';
 
+import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '$lib/canvas/store';
+import { SNAKE_POSITION } from '$lib/snake/store';
+import { DIFFICULTIES, DIFFICULTY, GAME_PIECE_MIN_SIZE } from '$lib/stores';
 import { get } from 'svelte/store';
 import { vi } from 'vitest';
 
 import { act, render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 
-import Game from '../../routes/play/index.svelte';
-import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '../canvas/store';
-import { SNAKE_POSITION } from '../snake/store';
-import { DIFFICULTIES, DIFFICULTY, GAME_PIECE_MIN_SIZE } from '../stores';
-import createSnake from './createSnake';
+import Game from '../routes/play/index.svelte';
+import createSnake from './utils/createSnake';
 
 import type { SnakePosition, SnakeDirection } from '$lib/snake/types';
 
@@ -24,8 +24,8 @@ const setGameDifficulty = (difficulty: Difficulty) => DIFFICULTY.set(difficulty)
 const getGamePieceSize = () => get(GAME_PIECE_MIN_SIZE);
 const setGamePieceSize = (size: number) => GAME_PIECE_MIN_SIZE.set(size);
 
-const moveSnakeBySteps = async (steps: number) => {
-	await act(() => vi.advanceTimersByTime(steps * 16));
+const moveSnakeBySteps = (steps: number) => {
+	vi.advanceTimersByTime(steps * 16);
 };
 
 const getCanvasBoundaryDimensions = () => {
@@ -68,7 +68,7 @@ describe('the snake can move in different shapes', () => {
 		['down', [{ x1: 50, x2: 70, y1: 51, y2: 71, direction: 'down' }]]
 	])(
 		"when the snake is straight and it's direction is '%s' its body is '%o' after it moves",
-		(direction: string, position: object) => {
+		async (direction: string, position: object) => {
 			setSnakePosition(
 				createSnake(direction as SnakeDirection, {
 					length: 20,
@@ -78,6 +78,7 @@ describe('the snake can move in different shapes', () => {
 			);
 			setGamePieceSize(20);
 			render(Game);
+			await act();
 			expect(getSnakePosition()).toEqual(position);
 		}
 	);
@@ -112,7 +113,7 @@ describe('the snake can move in different shapes', () => {
 	])(
 		`the snake can move in different shapes; 
 		when it's head and tail directions are %s and %s and it's body directions are %o, it's positions are %o`,
-		(headDirection, tailDirection, bodyDirections, expectedPosition) => {
+		async (headDirection, tailDirection, bodyDirections, expectedPosition) => {
 			setSnakePosition(
 				createSnake(headDirection as SnakeDirection, {
 					body: bodyDirections as SnakeDirection[],
@@ -124,6 +125,7 @@ describe('the snake can move in different shapes', () => {
 			);
 			setGamePieceSize(10);
 			render(Game);
+			await act();
 			expect(getSnakePosition()).toEqual(expectedPosition);
 		}
 	);
@@ -135,7 +137,7 @@ describe('the snake can move in different shapes', () => {
 	])(
 		'the snake speed depends on the difficulty; when the difficulty is "%s" the speed is "%i" and the snake position is %o after moving',
 
-		(difficulty, speed, expectedPosition) => {
+		async (difficulty, speed, expectedPosition) => {
 			setGameDifficulty(difficulty as Difficulty);
 			const initialSnakePosition = createSnake('right', {
 				length: 20,
@@ -146,6 +148,7 @@ describe('the snake can move in different shapes', () => {
 			setGamePieceSize(20);
 			setSnakePosition(initialSnakePosition);
 			render(Game);
+			await act();
 
 			const currentSnakePosition = getSnakePosition();
 			expect(currentSnakePosition[0].x1 - initialSnakePosition[0].x1).toBe(speed);
@@ -167,7 +170,8 @@ describe('the snake can move in different shapes', () => {
 		setGamePieceSize(2);
 		setGameDifficulty('Baby Steps');
 		render(Game);
-		await moveSnakeBySteps(24);
+		await act();
+		moveSnakeBySteps(24);
 
 		const snakePosition = getSnakePosition();
 		expect(snakePosition).toHaveLength(1);
@@ -180,7 +184,7 @@ describe('the snake can move in different shapes', () => {
 		});
 	});
 
-	test('the snake can move through the canvas boundary', () => {
+	test('the snake can move through the canvas boundary', async () => {
 		const canvasBoundaryDimensions = getCanvasBoundaryDimensions();
 		setSnakePosition(
 			createSnake('right', {
@@ -191,6 +195,7 @@ describe('the snake can move in different shapes', () => {
 		);
 		setGamePieceSize(6);
 		render(Game);
+		await act();
 
 		const snakePosition = getSnakePosition();
 		expect(snakePosition).toHaveLength(2);
@@ -260,6 +265,7 @@ describe('the snake can change directions', () => {
 			);
 
 			render(Game);
+			await act();
 
 			await user.keyboard(
 				`{Arrow${newDirection.charAt(0).toUpperCase() + newDirection.substring(1)}}`
@@ -290,21 +296,22 @@ describe('the game stops stops running', () => {
 		setGamePieceSize(12);
 
 		render(Game);
+		await act();
 
 		await user.keyboard('[ArrowUp]');
-		await moveSnakeBySteps(13);
+		moveSnakeBySteps(13);
 
 		await user.keyboard('[ArrowLeft]');
-		await moveSnakeBySteps(13);
+		moveSnakeBySteps(13);
 
 		await user.keyboard('[ArrowDown]');
-		await moveSnakeBySteps(2);
+		moveSnakeBySteps(2);
 
 		let snakePosition = getSnakePosition();
 		let head = snakePosition[0];
 		expect(head.y2 - head.y1).toBe(13);
 
-		await moveSnakeBySteps(12);
+		moveSnakeBySteps(12);
 		snakePosition = getSnakePosition();
 		head = snakePosition[0];
 		expect(head.y2 - head.y1).toBe(13);
