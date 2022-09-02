@@ -2,11 +2,12 @@
 	import Canvas from '$lib/canvas/Canvas.svelte';
 	import Level from '$lib/Level.svelte';
 	import { SCOREBOARD } from '$lib/stores';
+	import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '$lib/canvas/store';
 </script>
 
 <section class="flex flex-col justify-between items-center h-[calc(100vh-7.5rem)] w-5/6 mx-auto">
 	<section class="h-2/3 sm:h-5/6 w-full my-auto">
-		<Canvas>
+		<Canvas width={$DEFAULT_CANVAS_WIDTH} height={$DEFAULT_CANVAS_HEIGHT}>
 			<Level />
 		</Canvas>
 	</section>

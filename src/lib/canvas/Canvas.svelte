@@ -1,15 +1,24 @@
 <script lang="ts">
 	// TODO: STYLE FALLBACK CONTENT!!!!
 	import { onDestroy, onMount, setContext, tick } from 'svelte';
+
+	import scaleCanvas from './scaleCanvas';
 	import { RENDER_CONTEXT_KEY } from '../stores';
-	import { canvasSize } from './store';
-	import { setCanvasSize, scaleCanvasDrawings } from './setCanvasSize';
 	import type { RenderFn, RenderObject, RenderContext } from './types';
+
+	export let width: number, height: number;
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
-	let animationLoop: number;
+	let animation: number;
 	let isAnimationRunning = false;
+
+	let canvasDimensions = {
+		canvasWidth: 1,
+		canvasHeight: 1,
+		styleWidth: '1px',
+		styleHeight: '1px'
+	};
 
 	const renders = new Set<RenderFn>();
 	const animations = new Set<RenderFn>();
@@ -71,51 +80,43 @@
 			fn(ctx);
 		});
 
-		animationLoop = requestAnimationFrame(runAnimations);
+		animation = requestAnimationFrame(runAnimations);
 	};
 
 	const pauseAnimation = () => {
-		cancelAnimationFrame(animationLoop);
+		cancelAnimationFrame(animation);
 		isAnimationRunning = false;
 	};
 
-	const getCanvasParentElementDimensions = () => {
-		const parent = canvas.parentElement;
-
-		if (!parent) {
-			throw new Error('Error mounting component');
-		}
-
-		return { width: parent.clientWidth, height: parent?.clientHeight };
+	const getParentDimensions = () => {
+		const parent = canvas.parentElement as HTMLElement;
+		return { width: parent.clientWidth, height: parent.clientHeight };
 	};
 
 	onMount(async () => {
-		await tick();
-		const { width, height } = getCanvasParentElementDimensions();
-		setCanvasSize(width, height);
+		if (!canvas.getContext('2d')) throw new Error('Browser does not support canvas');
+		ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-		const context = canvas.getContext('2d');
-		if (!context) throw new Error('Browser does not support canvas');
-		ctx = context;
+		const { width: parentWidth, height: parentHeight } = getParentDimensions();
+		canvasDimensions = scaleCanvas(parentWidth, parentHeight, width, height, ctx);
 
 		await tick();
-		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
 		runRenders();
 		runAnimations();
 	});
 
 	onDestroy(() => {
-		if (animationLoop) {
+		if (animation) {
 			pauseAnimation();
 		}
 	});
 </script>
 
 <canvas
-	width={$canvasSize.canvasWidth}
-	height={$canvasSize.canvasHeight}
-	style:width={$canvasSize.styleWidth}
-	style:height={$canvasSize.styleHeight}
+	width={canvasDimensions.canvasWidth}
+	height={canvasDimensions.canvasHeight}
+	style:width={canvasDimensions.styleWidth}
+	style:height={canvasDimensions.styleHeight}
 	class="border-2 border-solid border-black mx-auto shadow-md"
 	bind:this={canvas}
 	data-testid="canvas"
@@ -126,16 +127,15 @@
 <slot />
 <svelte:window
 	on:resize|passive={() => {
+		// FIXME: Don't move an animation frame on resize just draw
 		const wasAnimationRunningBeforeResize = isAnimationRunning;
 		pauseAnimation();
 
-		const { width, height } = getCanvasParentElementDimensions();
-		setCanvasSize(width, height);
+		const { width: parentWidth, height: parentHeight } = getParentDimensions();
+		canvasDimensions = scaleCanvas(parentWidth, parentHeight, width, height, ctx);
 
 		tick().then(() => {
-			scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
 			runRenders();
-			// FIXME: Don't move an animation frame on resize just draw
 			runAnimations();
 			if (!wasAnimationRunningBeforeResize) pauseAnimation();
 		});
