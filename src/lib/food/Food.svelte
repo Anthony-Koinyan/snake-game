@@ -1,27 +1,33 @@
 <script lang="ts">
-	import type { RenderContext } from '$lib/canvas/types';
 	import { GAME_PIECE_MIN_SIZE, RENDER_CONTEXT_KEY } from '$lib/stores';
 	import { getContext } from 'svelte';
-	import Food from './index';
 	import { FOOD_POSITION } from './store';
 
-	export let redraw = false;
+	import type { RenderContext } from '$lib/canvas/types';
+	import type { FoodPosition } from './types';
 
 	const { addRenderFn, removeRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
-	let food: Food;
+
+	let previousFoodPosition: FoodPosition = { x: 1, y: 1 };
 
 	const renderFn = (ctx: CanvasRenderingContext2D) => {
-		if (redraw) {
-			food.clear(ctx);
-		}
-		food = new Food($FOOD_POSITION, $GAME_PIECE_MIN_SIZE / 2);
-		food.draw(ctx);
+		const radius = $GAME_PIECE_MIN_SIZE / 2;
+		ctx.clearRect(
+			previousFoodPosition.x - radius,
+			previousFoodPosition.y - radius,
+			radius * 2,
+			radius * 2
+		);
+
+		ctx.beginPath();
+		ctx.arc($FOOD_POSITION.x, $FOOD_POSITION.y, radius, 0, 2 * Math.PI);
+		ctx.fill();
+		ctx.closePath();
 	};
 
 	$: {
-		if (redraw) {
-			removeRenderFn(renderFn);
-		}
+		removeRenderFn(renderFn);
 		addRenderFn({ renderFn, animate: false });
+		previousFoodPosition = { ...$FOOD_POSITION };
 	}
 </script>

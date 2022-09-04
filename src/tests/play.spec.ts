@@ -63,7 +63,7 @@ describe('checking for default content on initial render', () => {
 describe('game updates properly when snake eats food', () => {
 	beforeEach(() => {
 		setScore(0);
-		setFoodPosition({ x: 175, y: 99 });
+		setFoodPosition({ x: 180, y: 99 });
 		setSnakePosition([{ x1: 130, x2: 170, y1: 97, y2: 103, direction: 'right' }]);
 	});
 
@@ -77,7 +77,7 @@ describe('game updates properly when snake eats food', () => {
 
 		render(Game);
 		await act();
-		moveSnakeBySteps(4);
+		moveSnakeBySteps(5);
 		await act();
 
 		expect(getFoodPosition()).not.toEqual(previousFoodPosition);
@@ -88,7 +88,7 @@ describe('game updates properly when snake eats food', () => {
 
 		render(Game);
 		await act();
-		moveSnakeBySteps(4);
+		moveSnakeBySteps(5);
 		await act();
 
 		const ctx = (screen.getByTestId('canvas') as HTMLCanvasElement).getContext('2d');
@@ -109,12 +109,12 @@ describe('game updates properly when snake eats food', () => {
 
 		render(Game);
 		await act();
-		moveSnakeBySteps(4);
+		moveSnakeBySteps(5);
 		await act();
 
 		const snakePosition = getSnakePosition();
 		expect(snakePosition[0].x2 - snakePosition[0].x1).toBe(
-			previousSnakePosition[0].x2 - previousSnakePosition[0].x1 + 3
+			previousSnakePosition[0].x2 - previousSnakePosition[0].x1 + getSnakeSpeed()
 		);
 	});
 
@@ -124,7 +124,7 @@ describe('game updates properly when snake eats food', () => {
 		const scoreboard = getByText(0);
 
 		await act();
-		moveSnakeBySteps(4);
+		moveSnakeBySteps(5);
 		await act();
 
 		expect(scoreboard.textContent).toBe(`${getSnakeSpeed() + previousScore}`);
