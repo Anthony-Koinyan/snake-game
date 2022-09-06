@@ -4,6 +4,7 @@ import { readable, writable } from 'svelte/store';
 export const RENDER_CONTEXT_KEY = Symbol();
 // TODO: this is only writable for testing purposes. Figure out a way to test without changing this
 export const GAME_PIECE_MIN_SIZE = writable(12);
+// TODO: change this to SCORE
 export const SCOREBOARD = writable(0);
 
 const difficulties = <const>[

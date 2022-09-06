@@ -4,7 +4,7 @@
 	import { FOOD_POSITION } from './store';
 
 	import type { RenderContext } from '$lib/canvas/types';
-	import type { FoodPosition } from './types';
+	import type { FoodPosition } from '$lib/types';
 
 	const { addRenderFn, removeRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
 

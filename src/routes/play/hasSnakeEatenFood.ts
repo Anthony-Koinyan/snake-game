@@ -1,5 +1,4 @@
-import type { FoodPosition } from './food/types';
-import type { SnakePosition } from './snake/types';
+import type { FoodPosition, SnakePosition } from '$lib/types';
 
 export default function (snakeHead: SnakePosition, foodPosition: FoodPosition, radius: number) {
 	if (

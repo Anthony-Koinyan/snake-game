@@ -1,7 +1,6 @@
-import hasSnakeCollidedWithObstacle from '../hasSnakeEatenFood';
+import hasSnakeCollidedWithObstacle from './hasSnakeEatenFood';
 
-import type { SnakePosition } from '$lib/snake/types';
-import type { FoodPosition } from './types';
+import type { SnakePosition, FoodPosition } from '$lib/types';
 
 export default function generateNewPosition(
 	diameter: number,

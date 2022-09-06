@@ -1,4 +1,4 @@
-import type { SnakePosition, SnakeDirection } from './types';
+import type { SnakePosition, SnakeDirection } from '$lib/types';
 
 export default function (
 	newDirection: SnakeDirection,

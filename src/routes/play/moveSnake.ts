@@ -1,4 +1,4 @@
-import type { SnakePosition } from './types';
+import type { SnakePosition } from '$lib/types';
 
 export default function (
 	snakePosition: SnakePosition[],

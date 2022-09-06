@@ -1,4 +1,4 @@
-import type { SnakePosition } from './types';
+import type { SnakePosition } from '$lib/types';
 
 export default function (snakePosition: SnakePosition[]) {
 	const head = JSON.parse(JSON.stringify(snakePosition))[0] as SnakePosition;

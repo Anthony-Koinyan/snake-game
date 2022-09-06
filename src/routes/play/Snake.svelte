@@ -4,16 +4,14 @@
 
 	import moveSnake from './moveSnake';
 	import isGameOver from './isGameOver';
-	import hasSnakeEatenFood from '$lib/hasSnakeEatenFood';
+	import hasSnakeEatenFood from './hasSnakeEatenFood';
 	import changeSnakeDirection from './changeSnakeDirection';
-	import generateNewFoodPosition from '$lib/food/generateNewFoodPosition';
+	import generateNewFoodPosition from './generateNewFoodPosition';
 
-	import { FOOD_POSITION } from '$lib/food/store';
-	import { drawSnake, clearSnake } from './render';
-	import { SNAKE_SPEED, SNAKE_POSITION } from './store';
-	import { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from '../canvas/store';
+	import { SNAKE_SPEED, SNAKE_POSITION, FOOD_POSITION } from './store';
+	import { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from '$lib/canvas/store';
 
-	import type { RenderContext } from '../canvas/types';
+	import type { RenderContext } from '$lib/canvas/types';
 
 	const { addRenderFn, removeRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
 
@@ -45,14 +43,30 @@
 				});
 			}
 
-			clearSnake(ctx, $SNAKE_POSITION);
+			for (const position of $SNAKE_POSITION) {
+				ctx.clearRect(
+					position.x1 - 1,
+					position.y1 - 1,
+					position.x2 - position.x1 + 2,
+					position.y2 - position.y1 + 2
+				);
+			}
+
 			$SNAKE_POSITION = moveSnake(
 				$SNAKE_POSITION,
 				$GAME_PIECE_MIN_SIZE,
 				$DEFAULT_CANVAS_WIDTH,
 				$DEFAULT_CANVAS_HEIGHT
 			);
-			drawSnake(ctx, $SNAKE_POSITION);
+
+			for (const position of $SNAKE_POSITION) {
+				ctx.fillRect(
+					position.x1,
+					position.y1,
+					position.x2 - position.x1,
+					position.y2 - position.y1
+				);
+			}
 		}
 	};
 
