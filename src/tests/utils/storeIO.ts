@@ -1,11 +1,10 @@
 import { DEFAULT_CANVAS_HEIGHT, DEFAULT_CANVAS_WIDTH } from '$lib/canvas/store';
-import { FOOD_POSITION } from '$lib/food/store';
-import { SNAKE_POSITION, SNAKE_SPEED } from '$lib/snake/store';
 import { DIFFICULTIES, DIFFICULTY, GAME_PIECE_MIN_SIZE, SCOREBOARD } from '$lib/stores';
 import { get } from 'svelte/store';
 
-import type { SnakePosition } from '$lib/snake/types';
-import type { FoodPosition } from '$lib/food';
+import { FOOD_POSITION, SNAKE_POSITION, SNAKE_SPEED } from '../../routes/play/store';
+
+import type { SnakePosition, FoodPosition } from '$lib/types';
 
 const difficulties = get(DIFFICULTIES);
 export type Difficulty = typeof difficulties[number];
