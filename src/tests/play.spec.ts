@@ -4,7 +4,7 @@ import { vi } from 'vitest';
 
 import { act, render, screen } from '@testing-library/svelte';
 
-import Game from '../routes/play/index.svelte';
+import Game from '../routes/play/+page.svelte';
 import moveSnakeBySteps from './utils/moveSnakeBySteps';
 import {
 	getFoodPosition,

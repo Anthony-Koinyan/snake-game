@@ -5,7 +5,7 @@ import { get } from 'svelte/store';
 
 import { fireEvent, render, screen } from '@testing-library/svelte';
 
-import Settings from '../routes/settings/index.svelte';
+import Settings from '../routes/settings/+page.svelte';
 
 describe('The difficulty can be changed', () => {
 	const getGameDifficulty = () => get(DIFFICULTY);

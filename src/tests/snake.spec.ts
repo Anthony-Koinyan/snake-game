@@ -5,7 +5,7 @@ import { vi } from 'vitest';
 import { act, render } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 
-import Game from '../routes/play/index.svelte';
+import Game from '../routes/play/+page.svelte';
 import createSnake from './utils/createSnake';
 import moveSnakeBySteps from './utils/moveSnakeBySteps';
 import {
@@ -198,6 +198,18 @@ describe('the snake can move in different shapes', () => {
 	});
 });
 
+function setupUserEvents(setup: () => void) {
+	setup();
+	return {
+		user: userEvent.setup({
+			advanceTimers(delay) {
+				vi.advanceTimersByTime(delay);
+			}
+		}),
+		...render(Game)
+	};
+}
+
 describe('the snake can change directions', () => {
 	test.each([
 		[
@@ -236,21 +248,16 @@ describe('the snake can change directions', () => {
 	])(
 		'the snakes direction changes from %s to %s when %s key is pressed',
 		async (intialDirection, newDirection, expectedPosition) => {
-			const user = userEvent.setup({
-				advanceTimers(delay) {
-					vi.advanceTimersByTime(delay);
-				}
-			});
-
-			setSnakePosition(
-				createSnake(intialDirection as SnakeDirection, {
-					length: 40,
-					thickness: 12,
-					startPoint: { x: 50, y: 50 }
-				})
+			const { user } = setupUserEvents(() =>
+				setSnakePosition(
+					createSnake(intialDirection as SnakeDirection, {
+						length: 40,
+						thickness: 12,
+						startPoint: { x: 50, y: 50 }
+					})
+				)
 			);
 
-			render(Game);
 			await act();
 
 			await user.keyboard(
@@ -267,21 +274,17 @@ describe('the snake can change directions', () => {
 
 describe('the game stops stops running', () => {
 	test('the game stops when the snake bites itself', async () => {
-		const user = userEvent.setup({
-			advanceTimers(delay) {
-				vi.advanceTimersByTime(delay);
-			}
+		const { user } = setupUserEvents(() => {
+			setSnakePosition(
+				createSnake('right', {
+					length: 150,
+					thickness: 12,
+					startPoint: { x: 50, y: 50 }
+				})
+			);
+			setGamePieceSize(12);
 		});
-		setSnakePosition(
-			createSnake('right', {
-				length: 150,
-				thickness: 12,
-				startPoint: { x: 50, y: 50 }
-			})
-		);
-		setGamePieceSize(12);
 
-		render(Game);
 		await act();
 
 		await user.keyboard('[ArrowUp]');
