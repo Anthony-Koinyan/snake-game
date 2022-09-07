@@ -1,29 +1,23 @@
 import { readable, writable } from 'svelte/store';
 
-/**FIXME: when difficulties is iterated on it return two copies of each enum
- */
-
-enum difficulties {
-	'baby steps' = 1,
-	'pretty easy',
-	'midly difficult',
-	'hard',
-	'nightmare',
-	'hell',
-	'beg for mercy',
-	'cry to your mommy'
-}
-
 // TODO: make this a store (I think, not sure🤷🏾‍♂️)
 export const RENDER_CONTEXT_KEY = Symbol();
-
-export const GAME_PIECE_MIN_SIZE = readable(6);
+// TODO: this is only writable for testing purposes. Figure out a way to test without changing this
+export const GAME_PIECE_MIN_SIZE = writable(12);
+// TODO: change this to SCORE
 export const SCOREBOARD = writable(0);
+export const HIGHSCORES = writable<number[]>([]);
+
+const difficulties = <const>[
+	'Baby Steps',
+	'Pretty Easy',
+	'Midly Difficult',
+	'Hard',
+	'Nightmare',
+	'Hell',
+	'Beg For Mercy',
+	'Cry To Your Mommy'
+];
+
 export const DIFFICULTIES = readable(difficulties);
-export const DIFFICULTY = writable<{
-	name: string;
-	increment: difficulties;
-}>({
-	name: 'baby steps',
-	increment: difficulties['baby steps']
-});
+export const DIFFICULTY = writable<typeof difficulties[number]>('Midly Difficult');

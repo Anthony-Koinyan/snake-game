@@ -1,16 +1,23 @@
 <script lang="ts">
 	// TODO: STYLE FALLBACK CONTENT!!!!
-	import { onMount, setContext, tick } from 'svelte';
+	import { onDestroy, onMount, setContext, tick } from 'svelte';
+
+	import scaleCanvas from './scaleCanvas';
 	import { RENDER_CONTEXT_KEY } from '../stores';
-	import { canvasSize } from './store';
-	import { setCanvasSize, scaleCanvasDrawings } from './setCanvasSize';
 	import type { RenderFn, RenderObject, RenderContext } from './types';
 
-	export let container: HTMLElement;
+	export let width: number, height: number, paused: boolean;
+
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
-	let animationLoop: number;
-	let runningAnimation = false;
+	let animation: number;
+
+	let canvasDimensions = {
+		canvasWidth: 1,
+		canvasHeight: 1,
+		styleWidth: '1px',
+		styleHeight: '1px'
+	};
 
 	const renders = new Set<RenderFn>();
 	const animations = new Set<RenderFn>();
@@ -23,6 +30,10 @@
 			} else {
 				if (renders.has(data.renderFn)) renders.delete(data.renderFn);
 				renders.add(data.renderFn);
+
+				if (canvas) {
+					runRenders();
+				}
 			}
 		},
 		removeRenderFn(fn: RenderFn) {
@@ -37,68 +48,76 @@
 		}
 	});
 
-	const runAnimations = () => {
-		runningAnimation = true;
-
+	const runRenders = () => {
 		if (renders.size > 0) {
 			renders.forEach((fn) => {
-				if (!fn) throw new Error('Render function must not be null');
-				if (typeof fn !== 'function') throw new Error('Render function must be function');
+				if (typeof fn !== 'function') {
+					throw new Error('INVALID INPUT!!!\nRender function must be FUNCTION!!!');
+				}
 				fn(ctx);
-				renders.delete(fn);
 			});
 		}
+	};
 
+	const runAnimations = () => {
 		if (animations.size === 0) {
 			return pauseAnimation();
 		}
 
 		animations.forEach((fn) => {
-			if (!fn) {
-				pauseAnimation();
-				throw new Error('Animation function must not be null');
-			}
-
 			if (typeof fn !== 'function') {
-				pauseAnimation();
-				throw new Error('Animation function must be function');
+				throw new Error('INVALID INPUT!!!Animation function must be FUNCTION!!!');
 			}
 
 			fn(ctx);
 		});
 
-		animationLoop = requestAnimationFrame(runAnimations);
+		animation = requestAnimationFrame(runAnimations);
 	};
 
 	const pauseAnimation = () => {
-		cancelAnimationFrame(animationLoop);
-		runningAnimation = false;
+		cancelAnimationFrame(animation);
+		animation = 0;
+	};
+
+	$: {
+		if (paused === true && animation > 0) pauseAnimation();
+		else if (paused === false && animation === 0) runAnimations();
+	}
+
+	const getParentDimensions = () => {
+		const parent = canvas.parentElement as HTMLElement;
+		return { width: parent.clientWidth, height: parent.clientHeight };
 	};
 
 	onMount(async () => {
-		await tick();
-		setCanvasSize(container);
-		const context = canvas.getContext('2d');
-		if (!context) throw new Error('Browser does not support canvas');
-		ctx = context;
+		if (!canvas.getContext('2d')) throw new Error('Browser does not support canvas');
+		ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+
+		const { width: parentWidth, height: parentHeight } = getParentDimensions();
+		canvasDimensions = scaleCanvas(parentWidth, parentHeight, width, height, ctx);
 
 		await tick();
-		scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
-
-		if (animations.size > 0) {
-			runAnimations();
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			ctx.fillStyle = 'rgb(245, 245, 245, 1)';
 		}
+		runRenders();
+		runAnimations();
+	});
 
-		return pauseAnimation;
+	onDestroy(() => {
+		if (animation) {
+			pauseAnimation();
+		}
 	});
 </script>
 
 <canvas
-	width={$canvasSize.canvasWidth}
-	height={$canvasSize.canvasHeight}
-	style:width={$canvasSize.styleWidth}
-	style:height={$canvasSize.styleHeight}
-	class="border-2 border-solid border-black mx-auto"
+	width={canvasDimensions.canvasWidth}
+	height={canvasDimensions.canvasHeight}
+	style:width={canvasDimensions.styleWidth}
+	style:height={canvasDimensions.styleHeight}
+	class="border-2 border-solid border-black dark:border-neutral-100 mx-auto shadow-md"
 	bind:this={canvas}
 	data-testid="canvas"
 >
@@ -106,23 +125,24 @@
 </canvas>
 
 <slot />
-<svelte:window
+<!-- <svelte:window
 	on:resize|passive={() => {
+		alert('resized');
+
+		// FIXME: Don't move an animation frame on resize just draw
+		const wasAnimationRunningBeforeResize = !!animation;
 		pauseAnimation();
-		setCanvasSize(container);
+
+		const { width: parentWidth, height: parentHeight } = getParentDimensions();
+		canvasDimensions = scaleCanvas(parentWidth, parentHeight, width, height, ctx);
 
 		tick().then(() => {
-			scaleCanvasDrawings(ctx, $canvasSize.scaleFactor);
-
-			if (animations.size > 0) {
-				runAnimations();
+			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				ctx.fillStyle = 'rgb(245, 245, 245, 1)';
 			}
+			runRenders();
+			runAnimations();
+			if (!wasAnimationRunningBeforeResize) pauseAnimation();
 		});
 	}}
-	on:keypress|preventDefault={(e) => {
-		if (e.code === 'Space') {
-			if (runningAnimation === true) pauseAnimation();
-			else runAnimations();
-		}
-	}}
-/>
+/> -->
