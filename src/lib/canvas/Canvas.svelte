@@ -6,7 +6,7 @@
 	import { RENDER_CONTEXT_KEY } from '../stores';
 	import type { RenderFn, RenderObject, RenderContext } from './types';
 
-	export let width: number, height: number;
+	export let width: number, height: number, paused: boolean;
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
@@ -80,6 +80,11 @@
 		animation = 0;
 	};
 
+	$: {
+		if (paused === true && animation > 0) pauseAnimation();
+		else if (paused === false && animation === 0) runAnimations();
+	}
+
 	const getParentDimensions = () => {
 		const parent = canvas.parentElement as HTMLElement;
 		return { width: parent.clientWidth, height: parent.clientHeight };
@@ -93,6 +98,9 @@
 		canvasDimensions = scaleCanvas(parentWidth, parentHeight, width, height, ctx);
 
 		await tick();
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			ctx.fillStyle = 'rgb(245, 245, 245, 1)';
+		}
 		runRenders();
 		runAnimations();
 	});
@@ -109,7 +117,7 @@
 	height={canvasDimensions.canvasHeight}
 	style:width={canvasDimensions.styleWidth}
 	style:height={canvasDimensions.styleHeight}
-	class="border-2 border-solid border-black mx-auto shadow-md"
+	class="border-2 border-solid border-black dark:border-neutral-100 mx-auto shadow-md"
 	bind:this={canvas}
 	data-testid="canvas"
 >
@@ -117,8 +125,10 @@
 </canvas>
 
 <slot />
-<svelte:window
+<!-- <svelte:window
 	on:resize|passive={() => {
+		alert('resized');
+
 		// FIXME: Don't move an animation frame on resize just draw
 		const wasAnimationRunningBeforeResize = !!animation;
 		pauseAnimation();
@@ -127,15 +137,12 @@
 		canvasDimensions = scaleCanvas(parentWidth, parentHeight, width, height, ctx);
 
 		tick().then(() => {
+			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+				ctx.fillStyle = 'rgb(245, 245, 245, 1)';
+			}
 			runRenders();
 			runAnimations();
 			if (!wasAnimationRunningBeforeResize) pauseAnimation();
 		});
 	}}
-	on:keypress|preventDefault={(e) => {
-		if (e.code === 'Space') {
-			if (animation) pauseAnimation();
-			else runAnimations();
-		}
-	}}
-/>
+/> -->

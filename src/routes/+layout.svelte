@@ -4,7 +4,7 @@
 </script>
 
 {#if $page.url.pathname !== '/'}
-	<nav class="w-full p-5 border-y-black border-b-2 shadow-md">
+	<nav class="w-full p-5 border-y-black dark:border-y-neutral-100 border-b-2 shadow-md">
 		<a
 			href="/"
 			class="flex text-3xl h-10 gap-4 ml-0 justify-start cursor-pointer w-fit group active:-translate-x-4"
@@ -24,6 +24,7 @@
 		</a>
 	</nav>
 {/if}
-<main class="p-5 w-screen">
+
+<main class="p-5 w-screen dark:bg-black dark:text-neutral-100 overflow-scroll">
 	<slot />
 </main>

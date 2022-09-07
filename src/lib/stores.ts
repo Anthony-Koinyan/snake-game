@@ -6,6 +6,7 @@ export const RENDER_CONTEXT_KEY = Symbol();
 export const GAME_PIECE_MIN_SIZE = writable(12);
 // TODO: change this to SCORE
 export const SCOREBOARD = writable(0);
+export const HIGHSCORES = writable<number[]>([]);
 
 const difficulties = <const>[
 	'Baby Steps',
@@ -19,4 +20,4 @@ const difficulties = <const>[
 ];
 
 export const DIFFICULTIES = readable(difficulties);
-export const DIFFICULTY = writable<typeof difficulties[number]>('Baby Steps');
+export const DIFFICULTY = writable<typeof difficulties[number]>('Midly Difficult');

@@ -3,7 +3,7 @@ import { derived, writable } from 'svelte/store';
 
 import type { FoodPosition, SnakePosition } from '$lib/types';
 
-export const FOOD_POSITION = writable<FoodPosition>({ x: 50, y: 90 });
+export const FOOD_POSITION = writable<FoodPosition>();
 
 export const SNAKE_SPEED = derived(
 	[DIFFICULTY, DIFFICULTIES],

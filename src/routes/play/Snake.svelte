@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import { GAME_PIECE_MIN_SIZE, RENDER_CONTEXT_KEY, SCOREBOARD } from '$lib/stores';
+	import {
+		DIFFICULTY,
+		GAME_PIECE_MIN_SIZE,
+		HIGHSCORES,
+		RENDER_CONTEXT_KEY,
+		SCOREBOARD
+	} from '$lib/stores';
 
 	import moveSnake from './moveSnake';
 	import isGameOver from './isGameOver';
@@ -12,6 +18,7 @@
 	import { DEFAULT_CANVAS_WIDTH, DEFAULT_CANVAS_HEIGHT } from '$lib/canvas/store';
 
 	import type { RenderContext } from '$lib/canvas/types';
+	import type { SnakeDirection } from '$lib/types';
 
 	const { addRenderFn, removeRenderFn } = getContext<RenderContext>(RENDER_CONTEXT_KEY);
 
@@ -19,6 +26,11 @@
 		for (let i = 0; i < $SNAKE_SPEED; i++) {
 			if (isGameOver($SNAKE_POSITION)) {
 				removeRenderFn(renderFn);
+				$HIGHSCORES.push($SCOREBOARD);
+				$HIGHSCORES.sort((first, second) => second - first);
+				if ($HIGHSCORES.length > 5) {
+					$HIGHSCORES.pop();
+				}
 				break;
 			}
 
@@ -74,6 +86,11 @@
 		renderFn,
 		animate: true
 	});
+
+	let startTouchX: number;
+	let startTouchY: number;
+	const touchThreshold = 15;
+	let swipeDirection: SnakeDirection;
 </script>
 
 <svelte:window
@@ -86,6 +103,30 @@
 		if (e.code === 'KeyW' || e.code === 'ArrowUp')
 			$SNAKE_POSITION = changeSnakeDirection('up', $SNAKE_POSITION, $GAME_PIECE_MIN_SIZE);
 		if (e.code === 'KeyS' || e.code === 'ArrowDown')
+			$SNAKE_POSITION = changeSnakeDirection('down', $SNAKE_POSITION, $GAME_PIECE_MIN_SIZE);
+	}}
+	on:touchstart={(e) => {
+		startTouchX = e.changedTouches[0].pageX;
+		startTouchY = e.changedTouches[0].pageY;
+	}}
+	on:touchmove={(e) => {
+		const swipeDistanceX = e.changedTouches[0].pageX - startTouchX;
+		const swipeDistanceY = e.changedTouches[0].pageY - startTouchY;
+
+		if (swipeDistanceX < -touchThreshold) swipeDirection = 'left';
+		if (swipeDistanceX > touchThreshold) swipeDirection = 'right';
+
+		if (swipeDistanceY < -touchThreshold) swipeDirection = 'up';
+		if (swipeDistanceY > touchThreshold) swipeDirection = 'down';
+	}}
+	on:touchend={() => {
+		if (swipeDirection === 'right')
+			$SNAKE_POSITION = changeSnakeDirection('right', $SNAKE_POSITION, $GAME_PIECE_MIN_SIZE);
+		if (swipeDirection === 'left')
+			$SNAKE_POSITION = changeSnakeDirection('left', $SNAKE_POSITION, $GAME_PIECE_MIN_SIZE);
+		if (swipeDirection === 'up')
+			$SNAKE_POSITION = changeSnakeDirection('up', $SNAKE_POSITION, $GAME_PIECE_MIN_SIZE);
+		if (swipeDirection === 'down')
 			$SNAKE_POSITION = changeSnakeDirection('down', $SNAKE_POSITION, $GAME_PIECE_MIN_SIZE);
 	}}
 />

@@ -19,7 +19,7 @@ import {
 } from './utils/storeIO';
 
 import type { Difficulty } from './utils/storeIO';
-import type { SnakePosition, SnakeDirection } from '$lib/snake/types';
+import type { SnakePosition, SnakeDirection } from '$lib/types';
 
 beforeAll(() => {
 	vi.useFakeTimers();

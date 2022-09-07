@@ -1,26 +1,8 @@
 <script lang="ts">
-	const links = [
-		{
-			url: '/play#continue',
-			text: 'Continue'
-		},
-		{
-			url: '/play#new-game',
-			text: 'New Game'
-		},
-		{
-			url: '/settings',
-			text: 'Settings'
-		},
-		{
-			url: '/high-scores',
-			text: 'High Scores'
-		},
-		{
-			url: 'https://github.com/Anthony-Koinyan/snake-game',
-			text: 'Repo'
-		}
-	];
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+	$: links = data.links;
 </script>
 
 <div class="flex flex-col w-full h-[calc(100vh-2.5rem)]">
@@ -28,7 +10,7 @@
 		{#each links as link}
 			<a
 				href={link.url}
-				class="text-4xl sm:text-5xl inline-block my-auto p-4 hover:font-bold hover:border-4 hover:border-solid hover:border-black hover:shadow-md focus:font-bold focus:border-4 focus:border-solid focus:border-black focus:shadow-md focus:outline-none active:translate-x-3"
+				class="text-4xl sm:text-5xl inline-block my-auto p-4 hover:font-bold hover:border-4 hover:border-solid hover:border-black dark:hover:border-neutral-100 hover:shadow-md focus:font-bold focus:border-4 focus:border-solid focus:border-black dark:focus:border-neutral-100 focus:shadow-md focus:outline-none active:translate-x-3"
 				target={link.url.charAt(0) === '/' ? null : '_blank'}
 				rel={link.url.charAt(0) === '/' ? null : 'noopener'}
 			>

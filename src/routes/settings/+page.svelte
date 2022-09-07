@@ -18,7 +18,7 @@
 					name="difficulty"
 					value={difficulty}
 					bind:group={$DIFFICULTY}
-					class="h-4 w-4 text-gray-600 hover:text-gray-800 focus:ring-gray-600 focus:hover:ring-gray-800"
+					class="h-4 w-4 text-gray-600 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-400 focus:ring-gray-600 dark:focus:ring-gray-500 focus:hover:ring-gray-800 dark:focus:hover:ring-gray-500"
 				/>
 				{difficulty}
 			</label>
