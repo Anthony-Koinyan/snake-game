@@ -1,23 +1,16 @@
 <script lang="ts">
 	// TODO: STYLE FALLBACK CONTENT!!!!
-	import { onDestroy, onMount, setContext, tick } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
 
 	import scaleCanvas from './scaleCanvas';
 	import { RENDER_CONTEXT_KEY } from '../stores';
 	import type { RenderFn, RenderObject, RenderContext } from './types';
 
-	export let width: number, height: number, paused: boolean;
+	export let paused: boolean;
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
 	let animation: number;
-
-	let canvasDimensions = {
-		canvasWidth: 1,
-		canvasHeight: 1,
-		styleWidth: '1px',
-		styleHeight: '1px'
-	};
 
 	const renders = new Set<RenderFn>();
 	const animations = new Set<RenderFn>();
@@ -85,22 +78,16 @@
 		else if (paused === false && animation === 0) runAnimations();
 	}
 
-	const getParentDimensions = () => {
-		const parent = canvas.parentElement as HTMLElement;
-		return { width: parent.clientWidth, height: parent.clientHeight };
-	};
-
-	onMount(async () => {
+	onMount(() => {
 		if (!canvas.getContext('2d')) throw new Error('Browser does not support canvas');
 		ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-		const { width: parentWidth, height: parentHeight } = getParentDimensions();
-		canvasDimensions = scaleCanvas(parentWidth, parentHeight, width, height, ctx);
+		scaleCanvas(canvas);
 
-		await tick();
 		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			ctx.fillStyle = 'rgb(245, 245, 245, 1)';
 		}
+
 		runRenders();
 		runAnimations();
 	});
@@ -113,10 +100,6 @@
 </script>
 
 <canvas
-	width={canvasDimensions.canvasWidth}
-	height={canvasDimensions.canvasHeight}
-	style:width={canvasDimensions.styleWidth}
-	style:height={canvasDimensions.styleHeight}
 	class="border-2 border-solid border-black dark:border-neutral-100 mx-auto shadow-md"
 	bind:this={canvas}
 	data-testid="canvas"
@@ -125,24 +108,20 @@
 </canvas>
 
 <slot />
-<!-- <svelte:window
+<svelte:window
 	on:resize|passive={() => {
-		alert('resized');
-
-		// FIXME: Don't move an animation frame on resize just draw
 		const wasAnimationRunningBeforeResize = !!animation;
+
 		pauseAnimation();
+		scaleCanvas(canvas);
 
-		const { width: parentWidth, height: parentHeight } = getParentDimensions();
-		canvasDimensions = scaleCanvas(parentWidth, parentHeight, width, height, ctx);
+		if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			ctx.fillStyle = 'rgb(245, 245, 245, 1)';
+		}
 
-		tick().then(() => {
-			if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-				ctx.fillStyle = 'rgb(245, 245, 245, 1)';
-			}
-			runRenders();
-			runAnimations();
-			if (!wasAnimationRunningBeforeResize) pauseAnimation();
-		});
+		runRenders();
+		runAnimations();
+
+		if (!wasAnimationRunningBeforeResize) pauseAnimation();
 	}}
-/> -->
+/>

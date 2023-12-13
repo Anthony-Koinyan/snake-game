@@ -118,7 +118,7 @@
 		<div
 			class="h-full sm:h-[90%] w-full m-0 flex flex-col justify-evenly sm:justify-between items-center"
 		>
-			<Canvas width={$DEFAULT_CANVAS_WIDTH} height={$DEFAULT_CANVAS_HEIGHT} {paused}>
+			<Canvas {paused}>
 				<Level />
 				<Snake />
 				<Food />

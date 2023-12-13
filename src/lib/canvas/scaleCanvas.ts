@@ -1,24 +1,30 @@
-import { tick } from 'svelte';
+export default function scaleCanvas(canvas: HTMLCanvasElement) {
+	const ctx = canvas.getContext('2d');
+	const dpr = window.devicePixelRatio || 1;
 
-export default function scaleCanvas(
-	parentWidth: number,
-	parentHeight: number,
-	canvasWidth: number,
-	canvasHeight: number,
-	ctx: CanvasRenderingContext2D
-) {
-	const scaleFactor = Math.min(parentWidth / canvasWidth, parentHeight / canvasHeight);
-	const pixelRatio = window.devicePixelRatio || 1;
+	const baseWidth = 600;
+	const baseHeight = 400;
 
-	tick().then(() => {
-		ctx.setTransform(1, 0, 0, 1, 0, 0);
-		ctx.scale(scaleFactor * pixelRatio, scaleFactor * pixelRatio);
-	});
+	// Get container size
+	const containerWidth = canvas?.parentElement?.clientWidth;
+	const containerHeight = canvas?.parentElement?.clientHeight;
 
-	return {
-		canvasWidth: Math.floor(canvasWidth * scaleFactor * pixelRatio),
-		canvasHeight: Math.floor(canvasHeight * scaleFactor * pixelRatio),
-		styleWidth: `${Math.floor(canvasWidth * scaleFactor)}px`,
-		styleHeight: `${Math.floor(canvasHeight * scaleFactor)}px`
-	};
+	// Set canvas dimensions and scale the canvas
+	if (!containerHeight || !containerWidth || !ctx) return;
+
+	const scaleX = containerWidth / baseWidth;
+	const scaleY = containerHeight / baseHeight;
+	const scale = Math.min(scaleX, scaleY);
+
+	// Set canvas dimensions
+	canvas.width = baseWidth * scale * dpr;
+	canvas.height = baseHeight * scale * dpr;
+
+	// Set canvas styles
+	canvas.style.width = `${baseWidth * scale}px`;
+	canvas.style.height = `${baseHeight * scale}px`;
+
+	// Scale canvas
+	ctx.setTransform(1, 0, 0, 1, 0, 0);
+	ctx.scale(scale * dpr, scale * dpr);
 }
