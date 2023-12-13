@@ -1,6 +1,7 @@
 <script lang="ts">
 	// TODO: STYLE FALLBACK CONTENT!!!!
 	import { onDestroy, onMount, setContext } from 'svelte';
+	import debounce from 'lodash.debounce';
 
 	import scaleCanvas from './scaleCanvas';
 	import { RENDER_CONTEXT_KEY } from '../stores';
@@ -109,7 +110,7 @@
 
 <slot />
 <svelte:window
-	on:resize|passive={() => {
+	on:resize|passive={debounce(() => {
 		const wasAnimationRunningBeforeResize = !!animation;
 
 		pauseAnimation();
@@ -123,5 +124,5 @@
 		runAnimations();
 
 		if (!wasAnimationRunningBeforeResize) pauseAnimation();
-	}}
+	}, 125)}
 />
