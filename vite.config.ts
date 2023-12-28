@@ -1,12 +1,32 @@
-import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
+import type { UserConfig } from 'vite';
+import { configDefaults, type UserConfig as VitestConfig } from 'vitest/config';
 
-export default defineConfig({
+const config: UserConfig & { test: VitestConfig['test'] } = {
 	plugins: [sveltekit()],
+	define: {
+		// Eliminate in-source test code
+		'import.meta.vitest': 'undefined'
+	},
 	test: {
-		setupFiles: ['src/tests/utils/vitest-canvas-mock.ts'],
-		include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+		// jest like globals
 		globals: true,
-		environment: 'jsdom'
+		environment: 'jsdom',
+		// in-source testing
+		includeSource: ['src/**/*.{js,ts,svelte}'],
+		// Add @testing-library/jest-dom matchers & mocks of SvelteKit modules
+		setupFiles: ['./vitest-setup.ts'],
+		// Exclude files in c8
+		coverage: {
+			exclude: ['vitest-setup.ts']
+		},
+		deps: {
+			// Put Svelte component here, e.g., inline: [/svelte-multiselect/, /msw/]
+			inline: []
+		},
+		// Exclude playwright tests folder
+		exclude: [...configDefaults.exclude, 'tests']
 	}
-});
+};
+
+export default config;
